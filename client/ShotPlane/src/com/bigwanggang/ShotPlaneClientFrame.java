@@ -32,19 +32,20 @@ public class ShotPlaneClientFrame extends JFrame {
     private boolean serverIsReady = false;
 
     public ShotPlaneClientFrame() {
+        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        
         controlPanel = new JPanel();
         chatDisplayArea = new JTextArea(6, 6);
         chatInputArea = new JTextArea(6, 3);
         chatDisplayWindow = new JScrollPane();
         chatInputWindow = new JScrollPane();
+        
         chatDisplayWindow.getViewport().add(chatDisplayArea);
         chatInputWindow.getViewport().add(chatInputArea);
         chatInputArea.setLineWrap(true);
         chatDisplayArea.setLineWrap(true);
         chatDisplayArea.setDisabledTextColor(Color.BLACK);
-
         chatDisplayArea.setFont(new java.awt.Font("Dialog", 1, 14));
-        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         gameDisplayComponent = new ShotPlaneDisplayConponent(plane);
         constraints = new GridBagConstraints();
         ipField = new JTextField("127.0.0.1", 10);
