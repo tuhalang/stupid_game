@@ -35,6 +35,11 @@ public class ShotPlaneFrame extends JFrame {
     private JButton statusButton;
 
     public ShotPlaneFrame() {
+        // setup properties  for app
+        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        setLocationRelativeTo(null);
+        
+        // setup properties for element inside the app
         controlPanel = new JPanel();
         chatDisplayArea = new JTextArea(6, 6);
         chatDisplayArea.setEnabled(false);
@@ -48,7 +53,6 @@ public class ShotPlaneFrame extends JFrame {
         chatDisplayArea.setDisabledTextColor(Color.BLACK);
 
         chatDisplayArea.setFont(new java.awt.Font("Dialog", 1, 14));
-        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         gameDisplayComponent = new ShotPlaneDisplayConponent(plane);
         constraints = new GridBagConstraints();
         ipField = new JTextField(10);
@@ -98,7 +102,8 @@ public class ShotPlaneFrame extends JFrame {
         initSendButton(split);
 
         controlPanelInit();
-        setTitle("Server");
+        setTitle("SMART GAME by tuhalang ft nhanbka");
+//        setIconImage(new ImageIcon("./images/sg.png").getImage());
         setResizable(false);
     }
 

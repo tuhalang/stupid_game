@@ -9,6 +9,7 @@ import java.awt.*;
  */
 public class ShotPlaneApp
 {
+    
     public static void main(String[] args)
     {
         EventQueue.invokeLater(() ->
