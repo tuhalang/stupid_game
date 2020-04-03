@@ -10,6 +10,7 @@ package com.server.controller;
  * @author tuhalang
  */
 import com.server.common.GameConfig;
+import com.server.model.Command;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,7 +26,7 @@ public class Listener extends Thread {
 
     private Socket socket;
     
-    private BlockingQueue<String> messagesQueue;
+    private BlockingQueue<Command> commandsQueue;
 
     public Listener(Socket socket) {
         this.socket = socket;
@@ -43,8 +44,8 @@ public class Listener extends Thread {
                 String content = bufferedReader.readLine();
                 if (content != null) {
                     if(content.startsWith(GameConfig.CONTROL_GAME_CODE)){
-                        if(this.messagesQueue != null){
-                            this.messagesQueue.offer(content);
+                        if(this.commandsQueue != null){
+                            this.commandsQueue.offer(new Command(socket, content, System.currentTimeMillis()));
                         }
                     }else if(content.startsWith(GameConfig.LOGIN_CODE)){ 
                         // TODO
@@ -99,13 +100,15 @@ public class Listener extends Thread {
         this.flag = flag;
     }
 
-    public BlockingQueue<String> getMessagesQueue() {
-        return messagesQueue;
+    public BlockingQueue<Command> getCommandsQueue() {
+        return commandsQueue;
     }
 
-    public void setMessagesQueue(BlockingQueue<String> messagesQueue) {
-        this.messagesQueue = messagesQueue;
+    public void setCommandsQueue(BlockingQueue<Command> commandsQueue) {
+        this.commandsQueue = commandsQueue;
     }
+
+    
     
     
 

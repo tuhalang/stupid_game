@@ -17,7 +17,7 @@ import java.util.concurrent.BlockingQueue;
 public class Room extends Thread{
     
     private volatile LinkedHashMap<String, Player> players;
-    private volatile BlockingQueue<String> messagesQueue;
+    private volatile BlockingQueue<Command> commandsQueue;
     private String idRoom;
     private volatile Boolean status;
     private static Object mutex = new Object();
@@ -27,7 +27,7 @@ public class Room extends Thread{
     public Room(){
         this.idRoom = UUID.randomUUID().toString();
         players = new LinkedHashMap<>();
-        messagesQueue = new ArrayBlockingQueue<>(MAX_QUEUE);
+        commandsQueue = new ArrayBlockingQueue<>(MAX_QUEUE);
         this.status = true;
     }
     
@@ -57,8 +57,8 @@ public class Room extends Thread{
         return this.players.size();
     }
     
-    public synchronized BlockingQueue<String> getMessagesQueue(){
-        return this.messagesQueue;
+    public synchronized BlockingQueue<Command> getCommandsQueue(){
+        return this.commandsQueue;
     }
 
     public String getIdRoom() {
