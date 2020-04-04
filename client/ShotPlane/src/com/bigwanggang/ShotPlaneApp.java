@@ -14,7 +14,8 @@ public class ShotPlaneApp
     {
         EventQueue.invokeLater(() ->
         {
-            ShotPlaneFrame frame = new ShotPlaneFrame();
+//            ShotPlaneFrame frame = new ShotPlaneFrame();
+            PlayTab frame = new PlayTab();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setVisible(true);
         });
