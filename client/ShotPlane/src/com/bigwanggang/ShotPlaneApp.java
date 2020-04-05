@@ -16,6 +16,7 @@ public class ShotPlaneApp
         {
 //            ShotPlaneFrame frame = new ShotPlaneFrame();
             PlayTab frame = new PlayTab();
+            
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setVisible(true);
         });

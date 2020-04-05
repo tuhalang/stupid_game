@@ -27,10 +27,8 @@ public class PlayTab extends javax.swing.JFrame {
 
     private ShotPlaneDisplayConponent gameDisplayComponent;
     private Plane plane = new Plane(6, 5, 6, 8);
-    private GridBagConstraints constraints;
     private PrintWriter pw;                                     // for Chat
     private boolean serverIsReady = false;
-    private boolean clientIsReady = false;
     
     /**
      * Creates new form MainInterface
@@ -46,6 +44,7 @@ public class PlayTab extends javax.swing.JFrame {
         if (localhostAddress != null) {
             ipField.setText(localhostAddress.getHostAddress());
         }
+        setLocationRelativeTo(null);
         gameDisplayComponent = new ShotPlaneDisplayConponent(plane);
         singleInterface.add(gameDisplayComponent);
         playMainInterface.setVisible(true);
@@ -78,7 +77,7 @@ public class PlayTab extends javax.swing.JFrame {
         singleInterface = new javax.swing.JPanel();
         welcome = new javax.swing.JTextField();
         up_down = new javax.swing.JSplitPane();
-        jSplitPane2 = new javax.swing.JSplitPane();
+        ParameterPanel = new javax.swing.JSplitPane();
         directionPanel = new javax.swing.JPanel();
         rightButton = new javax.swing.JButton();
         downButton = new javax.swing.JButton();
@@ -89,9 +88,9 @@ public class PlayTab extends javax.swing.JFrame {
         controlPanel = new javax.swing.JPanel();
         connectButton = new javax.swing.JButton();
         portField = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
+        portLabel = new javax.swing.JLabel();
         ipField = new javax.swing.JTextField();
-        lblIpField = new javax.swing.JLabel();
+        ipLabel = new javax.swing.JLabel();
         left_right = new javax.swing.JSplitPane();
         dis_input = new javax.swing.JPanel();
         chatDisplayWindow = new javax.swing.JScrollPane();
@@ -106,15 +105,18 @@ public class PlayTab extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("SMART GAME by tuhalang ft nhanbka");
-        setMinimumSize(new java.awt.Dimension(780, 425));
+        setBackground(new java.awt.Color(203, 234, 245));
+        setMaximumSize(new java.awt.Dimension(782, 424));
+        setMinimumSize(new java.awt.Dimension(782, 424));
         setResizable(false);
 
         version.setFont(new java.awt.Font("Calibri", 3, 12)); // NOI18N
         version.setText("VERSION 1.0");
 
         menuBar.setBackground(new java.awt.Color(203, 234, 245));
-        menuBar.setMaximumSize(new java.awt.Dimension(98, 393));
-        menuBar.setMinimumSize(new java.awt.Dimension(98, 393));
+        menuBar.setMaximumSize(new java.awt.Dimension(98, 394));
+        menuBar.setMinimumSize(new java.awt.Dimension(98, 394));
+        menuBar.setPreferredSize(new java.awt.Dimension(98, 394));
 
         lblPlay.setBackground(new java.awt.Color(132, 206, 232));
         lblPlay.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
@@ -175,8 +177,7 @@ public class PlayTab extends javax.swing.JFrame {
                 .addGap(0, 0, 0)
                 .addComponent(lblUserInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(lblAboutUs, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 143, Short.MAX_VALUE))
+                .addComponent(lblAboutUs, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jLayeredPane1.setBackground(new java.awt.Color(132, 206, 232));
@@ -283,15 +284,16 @@ public class PlayTab extends javax.swing.JFrame {
         up_down.setDividerLocation(291);
         up_down.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
-        jSplitPane2.setBackground(new java.awt.Color(132, 206, 232));
-        jSplitPane2.setBorder(null);
-        jSplitPane2.setDividerLocation(410);
+        ParameterPanel.setBackground(new java.awt.Color(132, 206, 232));
+        ParameterPanel.setBorder(null);
+        ParameterPanel.setDividerLocation(360);
 
         directionPanel.setBackground(new java.awt.Color(99, 181, 218));
         directionPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         rightButton.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
         rightButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/iconfinder_arrow-right.png"))); // NOI18N
+        rightButton.setText("Right");
 
         downButton.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
         downButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/iconfinder_arrow-down.png"))); // NOI18N
@@ -312,6 +314,7 @@ public class PlayTab extends javax.swing.JFrame {
 
         leftButton.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
         leftButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/iconfinder_arrow-left.png"))); // NOI18N
+        leftButton.setText("Left");
 
         javax.swing.GroupLayout directionPanelLayout = new javax.swing.GroupLayout(directionPanel);
         directionPanel.setLayout(directionPanelLayout);
@@ -319,20 +322,17 @@ public class PlayTab extends javax.swing.JFrame {
             directionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(directionPanelLayout.createSequentialGroup()
                 .addGap(5, 5, 5)
+                .addGroup(directionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(rotate1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(leftButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(directionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(directionPanelLayout.createSequentialGroup()
-                        .addComponent(leftButton, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(5, 5, 5)
-                        .addComponent(downButton)
-                        .addGap(5, 5, 5)
-                        .addComponent(rightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(directionPanelLayout.createSequentialGroup()
-                        .addComponent(rotate1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(5, 5, 5)
-                        .addComponent(upButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(5, 5, 5)
-                        .addComponent(rotate2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(downButton, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(upButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(directionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(rotate2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(rightButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(5, 5, 5))
         );
         directionPanelLayout.setVerticalGroup(
@@ -346,15 +346,16 @@ public class PlayTab extends javax.swing.JFrame {
                 .addGap(5, 5, 5)
                 .addGroup(directionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(leftButton, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(downButton, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(rightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(directionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(downButton, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(rightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(5, 5, 5))
         );
 
         rightButton.getAccessibleContext().setAccessibleName("Right");
         leftButton.getAccessibleContext().setAccessibleName("Left");
 
-        jSplitPane2.setRightComponent(directionPanel);
+        ParameterPanel.setRightComponent(directionPanel);
 
         controlPanel.setBackground(new java.awt.Color(99, 181, 218));
         controlPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -367,14 +368,14 @@ public class PlayTab extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
-        jLabel1.setText("Port:");
+        portLabel.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        portLabel.setText("Port:");
 
         ipField.setEnabled(false);
 
-        lblIpField.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
-        lblIpField.setLabelFor(ipField);
-        lblIpField.setText("IP:");
+        ipLabel.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        ipLabel.setLabelFor(ipField);
+        ipLabel.setText("IP:");
 
         javax.swing.GroupLayout controlPanelLayout = new javax.swing.GroupLayout(controlPanel);
         controlPanel.setLayout(controlPanelLayout);
@@ -382,43 +383,42 @@ public class PlayTab extends javax.swing.JFrame {
             controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, controlPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblIpField, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(ipField, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(portField, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ipLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(ipField, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(5, 5, 5)
+                .addComponent(portLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(portField, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(3, 3, 3)
                 .addComponent(connectButton)
-                .addGap(12, 12, 12))
+                .addContainerGap())
         );
         controlPanelLayout.setVerticalGroup(
             controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, controlPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(portField, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(portLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(ipField, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblIpField, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, 0))
+                    .addComponent(ipLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(connectButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(14, 14, 14))
         );
 
-        jSplitPane2.setLeftComponent(controlPanel);
+        ParameterPanel.setLeftComponent(controlPanel);
 
-        up_down.setBottomComponent(jSplitPane2);
+        up_down.setBottomComponent(ParameterPanel);
 
         left_right.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        left_right.setDividerLocation(300);
+        left_right.setDividerLocation(320);
 
         dis_input.setBackground(new java.awt.Color(99, 181, 218));
         dis_input.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         chatDisplayArea.setEditable(false);
         chatDisplayArea.setColumns(20);
-        chatDisplayArea.setRows(5);
         chatDisplayWindow.setViewportView(chatDisplayArea);
 
         lblChatDisplayArea.setLabelFor(chatDisplayArea);
@@ -427,13 +427,15 @@ public class PlayTab extends javax.swing.JFrame {
         lblChatInputArea.setLabelFor(chatInputArea);
         lblChatInputArea.setText("Your Message");
 
+        chatInputWindow.setMaximumSize(new java.awt.Dimension(196, 84));
+        chatInputWindow.setMinimumSize(new java.awt.Dimension(196, 84));
+        chatInputWindow.setPreferredSize(new java.awt.Dimension(196, 84));
+
         chatInputArea.setColumns(20);
         chatInputArea.setFont(new java.awt.Font("Calibri", 0, 13)); // NOI18N
         chatInputArea.setLineWrap(true);
-        chatInputArea.setRows(5);
-        chatInputArea.setMaximumSize(new java.awt.Dimension(158, 78));
-        chatInputArea.setMinimumSize(new java.awt.Dimension(158, 78));
-        chatInputArea.setPreferredSize(new java.awt.Dimension(158, 78));
+        chatInputArea.setMaximumSize(new java.awt.Dimension(150, 78));
+        chatInputArea.setMinimumSize(new java.awt.Dimension(150, 78));
         chatInputWindow.setViewportView(chatInputArea);
 
         btnSend.setText("SEND");
@@ -453,21 +455,19 @@ public class PlayTab extends javax.swing.JFrame {
         dis_input.setLayout(dis_inputLayout);
         dis_inputLayout.setHorizontalGroup(
             dis_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(dis_inputLayout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, dis_inputLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(dis_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(chatDisplayWindow)
-                    .addComponent(okButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(dis_inputLayout.createSequentialGroup()
-                        .addGroup(dis_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblChatInputArea)
-                            .addComponent(lblChatDisplayArea)
-                            .addComponent(statusButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(dis_inputLayout.createSequentialGroup()
-                        .addComponent(chatInputWindow, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(lblChatDisplayArea)
+                    .addGroup(dis_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(lblChatInputArea)
+                        .addComponent(okButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(statusButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(dis_inputLayout.createSequentialGroup()
+                            .addComponent(chatInputWindow, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(btnSend, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(chatDisplayWindow, javax.swing.GroupLayout.Alignment.TRAILING)))
                 .addContainerGap())
         );
         dis_inputLayout.setVerticalGroup(
@@ -480,8 +480,8 @@ public class PlayTab extends javax.swing.JFrame {
                 .addComponent(lblChatInputArea)
                 .addGap(0, 0, 0)
                 .addGroup(dis_inputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(chatInputWindow, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(chatInputWindow, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(statusButton, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -490,6 +490,7 @@ public class PlayTab extends javax.swing.JFrame {
         );
 
         left_right.setRightComponent(dis_input);
+        dis_input.getAccessibleContext().setAccessibleDescription("");
 
         up_down.setLeftComponent(left_right);
 
@@ -498,13 +499,11 @@ public class PlayTab extends javax.swing.JFrame {
         singleInterfaceLayout.setHorizontalGroup(
             singleInterfaceLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(singleInterfaceLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, singleInterfaceLayout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(up_down, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE)
+                .addGroup(singleInterfaceLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(up_down, javax.swing.GroupLayout.PREFERRED_SIZE, 647, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         singleInterfaceLayout.setVerticalGroup(
             singleInterfaceLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -512,7 +511,7 @@ public class PlayTab extends javax.swing.JFrame {
                 .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(up_down, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
 
         jLayeredPane1.setLayer(playMainInterface, javax.swing.JLayeredPane.DEFAULT_LAYER);
@@ -530,7 +529,7 @@ public class PlayTab extends javax.swing.JFrame {
             jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jLayeredPane1Layout.createSequentialGroup()
                 .addComponent(playMainInterface, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 75, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(singleInterface, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -559,7 +558,7 @@ public class PlayTab extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLayeredPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(menuBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(menuBar, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         pack();
@@ -576,9 +575,9 @@ public class PlayTab extends javax.swing.JFrame {
         ipField.setEditable(true);
         singleInterface.setVisible(true);
         gameDisplayComponent = new ShotPlaneDisplayConponent(plane);
-        constraints = new GridBagConstraints();
         left_right.setLeftComponent(gameDisplayComponent);
         
+        // to hanlde acton of plain
         ActionListener moveListener = new ButtonAction();
         leftButton.addActionListener(moveListener);
         upButton.addActionListener(moveListener);
@@ -628,6 +627,7 @@ public class PlayTab extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JSplitPane ParameterPanel;
     private javax.swing.JButton btnMultiplayer;
     private javax.swing.JButton btnSend;
     private javax.swing.JButton btnSingle;
@@ -641,10 +641,9 @@ public class PlayTab extends javax.swing.JFrame {
     private javax.swing.JPanel dis_input;
     private javax.swing.JButton downButton;
     private javax.swing.JTextField ipField;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel ipLabel;
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JLabel lblAboutUs;
     private javax.swing.JLabel lblChatDisplayArea;
@@ -652,7 +651,6 @@ public class PlayTab extends javax.swing.JFrame {
     private java.awt.Label lblCopyRight;
     private javax.swing.JLabel lblDashboard;
     private javax.swing.JLabel lblHelp;
-    private javax.swing.JLabel lblIpField;
     private javax.swing.JLabel lblPlay;
     private javax.swing.JLabel lblRecord;
     private javax.swing.JLabel lblSelectMode;
@@ -663,6 +661,7 @@ public class PlayTab extends javax.swing.JFrame {
     private javax.swing.JButton okButton;
     private javax.swing.JPanel playMainInterface;
     private javax.swing.JTextField portField;
+    private javax.swing.JLabel portLabel;
     private javax.swing.JButton rightButton;
     private javax.swing.JButton rotate1;
     private javax.swing.JButton rotate2;
