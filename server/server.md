@@ -44,8 +44,9 @@
     | PREFIX | COMMAND      |
     |--------|--------------|
     |1       | LOGIN        |
-    |2       | JOIN ROOM    |
-    |3       | CONTROL GAME |
+    |2       | REGISTER     |
+    |3       | JOIN ROOM    |
+    |4       | CONTROL GAME |
 
 - Như vậy với từng loại command ta sẽ add message command vào từng BlockingQueue khác nhau để cho các Thread khác xử lý
     
@@ -54,16 +55,89 @@
 
 ## 4. Luồng xử lý cho command LOGIN  
 
+### 4.1 Client
+
+- Các bước thực hiện:
+
+    B1: Tạo connect socket như mô tả ở phần 2
+
+    B2: Đọc thông tin username và password từ giao diện 
+
+    B3: Kiểm tra định dạng của username và password tạo đối tượng User và truyền vào username, password
+
+    B4: Gửi request với message có dạng 1{"username":"hungpv","password":"123456"}
+
+- Cách chuyển từ Object sang dạng json 
+    ```
+    String json = Convertor.objectToJson(object);
+    ```
+- Cách gửi dữ liệu lên server 
+    ```
+    // Connect server 
+    Communication com = Communication.getIntance(ip, port);
+
+    // Send message 
+    com.send(message);
+    ```
+
+### 4.2 Server
+
+- Bản tin request để login sẽ có dạng: 1{"username":"hungpv","password":"123456"}
+- Bản tin response có dạng:
+    + Thành công: 1|room_id_1|room_id_2|...
+    + Thất bại:   0
+
+    B1: Cắt prefix command ra khỏi chuỗi để được {"username":"hungpv","password":"123456"}
+
+    B2: Map chuỗi JSON thành đối tượng user 
+
+    B3: Truy vấn database Redis với key là username -> so sánh password và trả về kết quả login
+
+- Cách map json thành object (giả sử là class User)
+    ```
+    User user = Convertor.jsonToObject(json, User.class);
+    ```
+
+- Cách kết nối jedis để truy vấn user 
+    ```
+    JedisSentinelPool pool = JedisConnectionPool.getPoolConnection();
+    Jedis jedis = null;
+    try{
+        jedis = pool.getResource();
+        jedis.select(JedisConstant.JEDIS_DB_USER);
+        
+        // query info 
+
+    }catch(Exception e){
+        // handle exception
+    }finally{
+        if(jedis != null && jedis.isConnected()){
+            jedis.close();
+        }
+    }
+    ```
+
+- Cách lấy danh sách room_id còn trống 
+    ```
+    Game game = Game.getIntance();
+    String listRoom = game.getListRoomEmpty();
+    ```
+
+## 5. Luồng xử lý cho command REGISTER 
+
+- Xử lý tương tự như command LOGIN 
+- Chỉ khác khi đăng kí thành công thì trả về : 1
+- Khi đăng kí thất bại thì trả về: 0
+- Khi đăng kí phải kiểm tra username đã tồn tại hay chưa.
+
+## 6. Luồng xử lý cho command JOIN ROOM 
+
 comming soon ...
 
-## 5. Luồng xử lý cho command JOIN ROOM 
+## 7. Luồng xử lý khi start game 
 
 comming soon ...
 
-## 6. Luồng xử lý khi start game 
-
-comming soon ...
-
-## 7. Luồng xử lý cho command CONTROL GAME 
+## 8. Luồng xử lý cho command CONTROL GAME 
 
 comming soon ...

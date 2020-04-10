@@ -5,6 +5,7 @@
  */
 package com.server.model;
 
+import com.server.common.GameConfig;
 import java.util.LinkedHashMap;
 
 /**
@@ -20,9 +21,15 @@ public class Game {
     
     private Game(){
         rooms = new LinkedHashMap<>();
+        if(!GameConfig.AUTO_ASSIGN_ROOM){
+            for(int i=0; i<MAX_ROOM; i++){
+                Room room = new Room();
+                rooms.put(room.getIdRoom(), room);
+            }
+        }
     }
     
-    public static Game newGame(){
+    public static Game getIntance(){
         Game localRef = game;
         if (localRef == null) {     
             synchronized (mutex) {
@@ -58,6 +65,16 @@ public class Game {
         }
         
         return null;
+    }
+    
+    public synchronized String getListRoomEmpty(){
+        String result="|";
+        for(Room room : rooms.values()){
+            if(!room.isFull()){
+                result+=room.getIdRoom()+"|";
+            }
+        }
+        return result;
     }
     
 }

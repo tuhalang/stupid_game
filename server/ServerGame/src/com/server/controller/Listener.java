@@ -26,7 +26,11 @@ public class Listener extends Thread {
 
     private Socket socket;
     
+    // queue for game
     private BlockingQueue<Command> commandsQueue;
+    
+    // queue for action system such as login, regsiter, join room
+    private BlockingQueue<Command> systemQueue;
 
     public Listener(Socket socket) {
         this.socket = socket;
@@ -48,9 +52,13 @@ public class Listener extends Thread {
                             this.commandsQueue.offer(new Command(socket, content, System.currentTimeMillis()));
                         }
                     }else if(content.startsWith(GameConfig.LOGIN_CODE)){ 
-                        // TODO
+                        if(this.systemQueue != null){
+                            this.systemQueue.offer(new Command(socket, content));
+                        }
                     }else if(content.startsWith(GameConfig.JOIN_ROOM_CODE)){
-                        // TODO
+                        if(this.systemQueue != null){
+                            this.systemQueue.offer(new Command(socket, content));
+                        }
                     }
                 }
             }
@@ -106,6 +114,14 @@ public class Listener extends Thread {
 
     public void setCommandsQueue(BlockingQueue<Command> commandsQueue) {
         this.commandsQueue = commandsQueue;
+    }
+
+    public BlockingQueue<Command> getSystemQueue() {
+        return systemQueue;
+    }
+
+    public void setSystemQueue(BlockingQueue<Command> systemQueue) {
+        this.systemQueue = systemQueue;
     }
 
     

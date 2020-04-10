@@ -5,13 +5,13 @@
  */
 package com.client.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,22 +28,22 @@ public class Communication {
     private static Communication communication;
     private static Object mutex = new Object();
 
-    private Communication(String ip, int port, BlockingQueue<String> messagesQueue) {
+    private Communication(String ip, int port) {
         try {
             this.socket = new Socket(ip, port);
-            this.messagesQueue = messagesQueue;
+            this.messagesQueue = new ArrayBlockingQueue<>(1024);
         } catch (IOException ex) {
             Logger.getLogger(Communication.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public static Communication getIntance(String ip, int port, BlockingQueue<String> messagesQueue) {
+    public static Communication getIntance(String ip, int port) {
         Communication localRef = communication;
         if (localRef == null) {
             synchronized (mutex) {
                 localRef = communication;
                 if (localRef == null) {
-                    communication = localRef = new Communication(ip, port, messagesQueue);
+                    communication = localRef = new Communication(ip, port);
                 }
             }
         }

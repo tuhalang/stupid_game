@@ -21,6 +21,11 @@ public class Command {
         this.message = message;
         this.currentTime = currentTime;
     }
+    
+    public Command(Socket socket, String message){
+        this.socket = socket;
+        this.message = message;
+    }
 
     public Socket getSocket() {
         return socket;

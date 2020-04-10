@@ -10,22 +10,12 @@ import com.server.model.Game;
 import com.server.model.Player;
 import com.server.model.Room;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Queue;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -42,10 +32,11 @@ public class HomeController {
 
     public static void main(String[] args) {
 
-        
+        SystemController systemController = SystemController.getIntance();
+        systemController.start();
         
         //create Game
-        game = Game.newGame();
+        game = Game.getIntance();
 
         // create NUM_OF_THREAD thread pool
         ExecutorService executorService = Executors.newFixedThreadPool(GameConfig.NUM_OF_THREAD);
@@ -69,6 +60,7 @@ public class HomeController {
                     
                     // create WorkerThread to handle request for each client
                     Listener listener = new Listener(socket);
+                    listener.setSystemQueue(systemController.getSystemQueue());
 
                     Player player = new Player(username, listener);
                     
