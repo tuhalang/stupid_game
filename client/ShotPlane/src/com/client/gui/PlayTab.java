@@ -29,6 +29,7 @@ public class PlayTab extends javax.swing.JFrame {
     private Plane plane = new Plane(6, 5, 6, 8);
     private PrintWriter pw;                                     // for Chat
     private boolean serverIsReady = false;
+    private static JFrame mainFrame;
     
     /**
      * Creates new form MainInterface
@@ -160,7 +161,7 @@ public class PlayTab extends javax.swing.JFrame {
         menuBar.setLayout(menuBarLayout);
         menuBarLayout.setHorizontalGroup(
             menuBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lblDashboard, javax.swing.GroupLayout.PREFERRED_SIZE, 98, Short.MAX_VALUE)
+            .addComponent(lblDashboard, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
             .addComponent(lblPlay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(lblRecord, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(lblUserInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -618,7 +619,8 @@ public class PlayTab extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new PlayTab().setVisible(true);
+                mainFrame = new PlayTab();
+                mainFrame.setVisible(true);
             }
         });
     }
@@ -810,7 +812,6 @@ public class PlayTab extends javax.swing.JFrame {
         }
     }
     
-    
     private class ConnectAction implements ActionListener {
 
         @Override
@@ -911,5 +912,46 @@ public class PlayTab extends javax.swing.JFrame {
         }
     }
     
-    
+    private class SwitchTabAction implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            if(event.getActionCommand().equals("Play")){
+                if(mainFrame.getName().equals("PlayTab"));
+                else{
+                    mainFrame.dispose();
+                    new PlayTab().setVisible(true);
+                }
+            }
+            if(event.getActionCommand().equals("Dashboard")){
+                if(mainFrame.getName().equals("DashboardTab"));
+                else{
+                    mainFrame.dispose();
+                    new DashboardTab().setVisible(true);
+                }
+            }
+            if(event.getActionCommand().equals("Record")){
+                if(mainFrame.getName().equals("RecordTab"));
+                else{
+                    mainFrame.dispose();
+                    new RecordTab().setVisible(true);
+                }
+            }
+            if(event.getActionCommand().equals("User Info")){
+                if(mainFrame.getName().equals("UserInfoTab"));
+                else{
+                    mainFrame.dispose();
+                    new UserInfoTab().setVisible(true);
+                }
+            }
+            if(event.getActionCommand().equals("About Us")){
+                if(mainFrame.getName().equals("AboutUsTab"));
+                else{
+                    mainFrame.dispose();
+                    new AboutUsTab().setVisible(true);
+                }
+            }
+        }
+        
+    }
 }
