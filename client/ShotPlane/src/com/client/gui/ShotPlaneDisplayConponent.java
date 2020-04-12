@@ -9,14 +9,18 @@ import java.awt.geom.Rectangle2D;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TimerTask;
 
 public class ShotPlaneDisplayConponent extends JComponent {
-    private static final int DEFAULT_WIDTH = 300;
-    private static final int DEFAULT_HEIGHT = 291;
+
+    private static final int DEFAULT_WIDTH = 810;
+    private static final int DEFAULT_HEIGHT = 600;
     private List<Line2D> line2DList = null;
-    private Map<Rectangle2D, Color> squares;
+    private ArrayList<Rectangle2D> squares;
     private PrintWriter pw;
     Graphics2D g2;
     private Plane plane;
@@ -26,26 +30,31 @@ public class ShotPlaneDisplayConponent extends JComponent {
     public ShotPlaneDisplayConponent(Plane plane) {
         this.plane = plane;
         line2DList = new ArrayList<>();
-        squares = new HashMap<>();
-        for (int i = 0; i < 15; i++) {
-            line2DList.add(new Line2D.Double(10, 10 + i * 20, 290, 10 + i * 20));
-            line2DList.add(new Line2D.Double(10 + i * 20, 10, 10 + i * 20, 290));
+        squares = new ArrayList<>();
+        for (int i = 0; i < 30; i++) {
+            line2DList.add(new Line2D.Double(10, 10 + i * 20, 790, 10 + i * 20));
+            line2DList.add(new Line2D.Double(10 + i * 20, 10, 10 + i * 20, 590));
         }
+        for (int i = 30; i < 40; i++) {
+            line2DList.add(new Line2D.Double(10 + i * 20, 10, 10 + i * 20, 590));
+        }
+        checkBullet();
 
-        addMouseListener(new ShotPlaneHandler());
+//        addMouseListener(new ShotPlaneHandler());
     }
 
     public void paintComponent(Graphics g) {
         g2 = (Graphics2D) g;
 
-        for (Line2D line : line2DList)
+        for (Line2D line : line2DList) {
             g2.draw(line);
+        }
 
-        for (Rectangle2D rectangle2D : squares.keySet()) {
-            g2.setPaint(squares.get(rectangle2D));
-            g2.fill(rectangle2D);
+        for (int i=0; i<squares.size(); i++) {
+            g2.setPaint(Color.RED);
+            g2.fill(squares.get(i));
             g2.setPaint(Color.BLACK);
-            g2.draw(rectangle2D);
+            g2.draw(squares.get(i));
         }
         if (displayPlane) {
             drawPlane(plane);
@@ -72,9 +81,15 @@ public class ShotPlaneDisplayConponent extends JComponent {
             }
         }
     }
-
+    
     public void addSquare(Rectangle2D rectangle2D, Color color) {
-        squares.put(rectangle2D, color);
+        squares.add(rectangle2D);
+    }
+
+    public void shot() {
+        Point head = plane.getHead();
+        Rectangle2D rec = new Rectangle2D.Double(20*head.getX()+10, 20*head.getY()-10, 20, 20);
+        addSquare(rec, Color.yellow);
     }
 
     private void drawPlane(Plane plane) {
@@ -146,7 +161,30 @@ public class ShotPlaneDisplayConponent extends JComponent {
         this.pw = pw;
     }
 
-    public void putRectangle(Rectangle2D rectangle2D, Color color) {
-        squares.put(rectangle2D, color);
+    public void putRectangle(Rectangle2D rectangle2D) {
+        squares.add(rectangle2D);
+    }
+    
+    private void checkBullet(){
+        java.util.Timer timer = new java.util.Timer();
+        Set<Integer> removes = new HashSet<>();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                for(int i=0; i<squares.size(); i++){
+                    Rectangle2D rec = squares.get(i);
+                    if(rec.getMinY()<0){
+                        removes.add(i);
+                    }
+                    rec.setFrame(rec.getMinX(), rec.getMinY()-10, 20, 20);
+                    squares.set(i, rec);
+                    repaint();
+                }
+                for(Integer i : removes){
+                    squares.remove(i);
+                }
+                removes.clear();
+            }
+        },0, 30);
     }
 }
