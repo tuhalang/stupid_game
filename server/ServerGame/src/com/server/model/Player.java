@@ -5,31 +5,23 @@
  */
 package com.server.model;
 
-import com.server.controller.Listener;
 import java.io.Serializable;
+import java.net.Socket;
 
 /**
  *
  * @author tuhalang
  */
-public class Player implements Serializable{
-    
-    private Listener listener;
+public class Player implements Serializable {
+
     private String username;
     private Boolean status;
-    
-    public Player(String username, Listener listener){
+    private Socket socket;
+
+    public Player(String username, Socket socket) {
         this.username = username;
-        this.listener = listener;
         this.status = Boolean.FALSE;
-    }
-
-    public Listener getListener() {
-        return listener;
-    }
-
-    public void setListener(Listener listener) {
-        this.listener = listener;
+        this.socket = socket;
     }
 
     public String getUsername() {
@@ -48,7 +40,14 @@ public class Player implements Serializable{
         this.status = status;
     }
 
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public void setSocket(Socket socket) {
+        this.socket = socket;
+    }
     
     
-    
+
 }

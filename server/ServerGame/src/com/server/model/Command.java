@@ -12,27 +12,27 @@ import java.net.Socket;
  * @author tuhalang
  */
 public class Command {
-    private Socket socket;
+    private Player player;
     private String message;
     private Long currentTime;
 
-    public Command(Socket socket, String message, Long currentTime) {
-        this.socket = socket;
+    public Command(Player player, String message, Long currentTime) {
+        this.player = player;
         this.message = message;
         this.currentTime = currentTime;
     }
     
-    public Command(Socket socket, String message){
-        this.socket = socket;
+    public Command(Player player, String message){
+        this.player = player;
         this.message = message;
     }
 
-    public Socket getSocket() {
-        return socket;
+    public Player getPlayer() {
+        return player;
     }
 
-    public void setSocket(Socket socket) {
-        this.socket = socket;
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 
     public String getMessage() {

@@ -30,6 +30,9 @@ public class GameConfig {
     public static String MASTER_NAME;
     public static String IP_ADDRESS;
     
+    public static final int WIDTH = 480; 
+    public static final int HEIGHT = 700;
+    
     
     static{
         FileReader reader = null;

@@ -73,7 +73,7 @@ public class SystemController extends Thread{
                     String commandType = message.substring(0, 1);
                     message = message.substring(1);
                     CommonService service = commandFactory.getService(commandType);
-                    service.handel(command.getSocket(), message);
+                    service.handel(command.getPlayer().getSocket(), message);
                 } catch (InterruptedException ex) {
                     LOGGER.error(ex);
                 }
