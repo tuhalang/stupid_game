@@ -24,7 +24,7 @@ public class Listener extends Thread {
 
     private int flag = 1;
 
-    // queue for game
+    // queue for ingame command
     private BlockingQueue<Command> commandsQueue;
     
     // queue for action system such as login, regsiter, join room
@@ -47,6 +47,7 @@ public class Listener extends Thread {
                 bufferedReader = new BufferedReader(inputStreamReader);
                 String content = bufferedReader.readLine();
                 if (content != null) {
+                   
                     if(content.startsWith(GameConfig.CONTROL_GAME_CODE)){
                         if(this.commandsQueue != null){
                             StackTraceElement[] e = this.getStackTrace();

@@ -110,6 +110,7 @@ public class Communication {
             public void run() {
                 while (!messagesQueue.isEmpty()) {
                     String message;
+                    // structure: <number of object> position 1 | bullet 1 | position 2 | bullet 2 | ... | enemy_position
                     try {
                         message = messagesQueue.take();
                         System.out.println(message);
