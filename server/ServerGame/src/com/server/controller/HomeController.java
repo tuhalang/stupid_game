@@ -75,12 +75,12 @@ public class HomeController {
                             listener.setCommandsQueue(room.getCommandsQueue());
                             game.setRoom(room.getIdRoom(), room);
                             LOGGER.info("USER: " + username + " JOINED ROOM " + room.getIdRoom());
-                            if(room.getNumOfMemmber()==1){
+                            if(room.getNumOfMemmber() == 1){
                                 room.startGame();
                             }
                             LOGGER.info("NUM OF MEMMBER: " + room.getNumOfMemmber());
                         }else{
-                            LOGGER.error("================= MAX ZOOM ==================");
+                            LOGGER.error("================= MAX ROOM ==================");
                         }
                     }
                     
@@ -98,7 +98,7 @@ public class HomeController {
             if (serverSocket != null) {
                 try {
                     serverSocket.close();
-                    LOGGER.info("server socket is cloesed");
+                    LOGGER.info("server socket is closed");
                 } catch (IOException e) {
                     LOGGER.error(e);
                 }

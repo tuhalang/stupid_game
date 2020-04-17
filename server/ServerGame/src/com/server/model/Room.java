@@ -162,14 +162,14 @@ public class Room extends Thread {
     public void bangAction(Player player) {
         Bullet[] bullets = this.bullets.get(player);
         Hero hero = this.heros.get(player);
-        for (Bullet bullet : bullets) {
-            bang(bullet, hero);
+        for(int i = 0; i < bullets.length; i++){
+            bang(bullets[i], hero, i, player);
         }
         this.bullets.put(player, bullets);
         this.heros.put(player, hero);
     }
 
-    public void bang(Bullet b, Hero hero) {
+    public void bang(Bullet b, Hero hero, int bulletIndex, Player player) {
         int index = -1;
         for (int i = 0; i < this.flyings.length; i++) {
             FlyingObject f = this.flyings[i];
@@ -196,11 +196,18 @@ public class Room extends Thread {
                         break;
                 }
             }
-
+                
+            // remove the FlyingObject was shot
             FlyingObject t = this.flyings[index];
             this.flyings[index] = this.flyings[this.flyings.length - 1];
             this.flyings[this.flyings.length - 1] = t;
             this.flyings = Arrays.copyOf(this.flyings, this.flyings.length - 1);
+            
+            // remove bullet if it shoot the plane
+            Bullet[] oldBullets = this.bullets.get(player);
+            Bullet bulletToRemove = oldBullets[bulletIndex];
+            this.bullets.get(player)[oldBullets.length - 1] = bulletToRemove;
+            this.bullets.put(player, Arrays.copyOf(oldBullets, oldBullets.length - 1));
         }
     }
 

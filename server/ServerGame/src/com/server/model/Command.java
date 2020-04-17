@@ -5,7 +5,6 @@
  */
 package com.server.model;
 
-import java.net.Socket;
 
 /**
  *

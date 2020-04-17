@@ -6,6 +6,7 @@
 package com.client.service;
 
 import com.client.shoot.ShootGame;
+import com.client.shoot.UserState;
 import com.model.Airplane;
 import com.model.Bullet;
 import com.model.FlyingObject;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.LinkedHashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -110,7 +112,6 @@ public class Communication {
             public void run() {
                 while (!messagesQueue.isEmpty()) {
                     String message;
-                    // structure: <number of object> position 1 | bullet 1 | position 2 | bullet 2 | ... | enemy_position
                     try {
                         message = messagesQueue.take();
                         System.out.println(message);
@@ -127,6 +128,7 @@ public class Communication {
                                 bullets[i] = bullet;
                             }
                             shootGame.setBullets(bullets);
+                            System.out.println(bullets.length);
                         }
                         if (objs.length > 2 && !objs[2].equals("")) {
                             String[] flyStrs = objs[2].split(";");
@@ -144,6 +146,52 @@ public class Communication {
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Communication.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    
+
+                    // temp code
+
+                    // structure: <number of user> | user1_name | position 1 | bullet 1 | user2_name | position 2 | bullet 2 | ... | userN_name | position n | bullet n | enemy_position
+//                    String message;                    
+//                    try {
+//                        message = messagesQueue.take();
+//                        System.out.println(message);
+//                        String[] objs = message.split("\\|");
+//                        int numberOfplayer = Integer.valueOf(objs[0]);                                              // get the number of player in the room
+//                        LinkedHashMap<String, UserState> userStates = new LinkedHashMap<String, UserState>();       // get the state of all user
+//                        for (int i = 0; i < numberOfplayer; i++) {
+//                            String userName = objs[3 * i + 1];
+//                            String[] positionStrs = objs[3 * i + 2].split(",");
+//                            int[] position = {Integer.parseInt(positionStrs[0]), Integer.parseInt(positionStrs[1])};
+//                            UserState uState = null;
+//                            if (!objs[3 * i + 3].equals("")) {
+//                                String[] bulletStrs = objs[3 * i + 3].split(";");
+//                                Bullet[] bullets = new Bullet[bulletStrs.length];
+//                                for (int j = 0; j < bulletStrs.length; j++) {
+//                                    String[] bulletPos = bulletStrs[j].split(",");
+//                                    Bullet bullet = new Bullet(Integer.parseInt(bulletPos[0]), Integer.parseInt(bulletPos[1]));
+//                                    bullets[j] = bullet;
+//                                }
+//                                uState = new UserState(position, bullets);
+//                            }
+//                            userStates.put(userName, uState);
+//                        }
+//                        
+//                        if (objs.length > 2 && !objs[2].equals("")) {
+//                            String[] flyStrs = objs[2].split(";");
+//                            FlyingObject[] flies = new FlyingObject[flyStrs.length];
+//                            for (int i = 0; i < flies.length; i++) {
+//                                if (!flyStrs[i].equals("")) {
+//                                    String[] bulletPos = flyStrs[i].split(",");
+//                                    FlyingObject fly = new Airplane(Integer.parseInt(bulletPos[0]), Integer.parseInt(bulletPos[1]));
+//                                    flies[i] = fly;
+//                                }
+//                            }
+//                            shootGame.setFlyings(flies);
+//                        }
+//
+//                    } catch (InterruptedException ex) {
+//                        Logger.getLogger(Communication.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
 
                 }
             }

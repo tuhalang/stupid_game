@@ -53,7 +53,7 @@ public class ShootGame extends JPanel {
             pause = ImageIO.read(ShootGame.class.getResource("pause.png"));
             gameover = ImageIO.read(ShootGame.class.getResource("gameover.png"));
             //airplane = ImageIO.read(ShootGame.class.getResource("airplane.png"));
-            bee = ImageIO.read(ShootGame.class.getResource("bee.png"));
+//            bee = ImageIO.read(ShootGame.class.getResource("bee.png"));
             //bullet = ImageIO.read(ShootGame.class.getResource("bullet.png"));
             //hero0 = ImageIO.read(ShootGame.class.getResource("hero0.png"));
             //hero1 = ImageIO.read(ShootGame.class.getResource("hero1.png"));
@@ -109,21 +109,21 @@ public class ShootGame extends JPanel {
         }
     }
 
-    int score = 0; //�÷�
+    int score = 0;                              // initialize the score of user
 
     /**
      * Bullet collide with the enemy
      */
     public void bangAction() {
         for (int i = 0; i < bullets.length; i++) { 
-            bang(bullets[i]); 
+            bang(bullets[i], i); 
         }
     }
 
     /**
      * Handle when bullet hit the enemy
      */
-    public void bang(Bullet b) {
+    public void bang(Bullet b, int bulletIndex) {
         int index = -1; // mark the enemy which is shoot
         for (int i = 0; i < flyings.length; i++) { 
             FlyingObject f = flyings[i]; 
@@ -158,6 +158,30 @@ public class ShootGame extends JPanel {
             
             flyings = Arrays.copyOf(flyings, flyings.length - 1);
 
+            // remove bullet if it shoot the plane
+
+            Bullet[] newBullets = new Bullet[bullets.length - 1];
+            for (int i = 0; i < bullets.length; i++) { 
+                if(i < bulletIndex)
+                    newBullets[i] = bullets[i];
+                else if(i == bulletIndex);
+                else
+                    newBullets[i - 1] = bullets[i];
+            }
+            bullets = newBullets;
+            
+            
+            
+            /* 
+            
+            
+            This is still not work
+            
+            
+            */
+            
+            
+            
         }
     }
 
@@ -241,9 +265,9 @@ public class ShootGame extends JPanel {
             }
 
             public void mouseExited(MouseEvent e) {
-//                if (state == RUNNING) {
-//                    state = PAUSE;   
-//                }
+                if (state == RUNNING) {
+                    state = PAUSE;   
+                }
             }
 
             public void mouseEntered(MouseEvent e) {
@@ -333,14 +357,14 @@ public class ShootGame extends JPanel {
      * ���ӵ�
      */
     public void paintBullets(Graphics g) {
-        for (int i = 0; i < bullets.length; i++) { //���������ӵ�
-            Bullet b = bullets[i]; //��ȡÿһ���ӵ�
-            g.drawImage(b.image, b.x, b.y, null); //���ӵ�����
+        for (int i = 0; i < bullets.length; i++) { 
+            Bullet b = bullets[i];
+            g.drawImage(b.image, b.x, b.y, null); 
         }
 //        for (Bullet gBullets : guestBullet) {
-//            for (int i = 0; i < gBullets.length; i++) { //���������ӵ�
-//                Bullet b = gBullets[i]; //��ȡÿһ���ӵ�
-//                g.drawImage(b.image, b.x, b.y, null); //���ӵ�����
+//            for (int i = 0; i < gBullets.length; i++) { 
+//                Bullet b = gBullets[i]; 
+//                g.drawImage(b.image, b.x, b.y, null);
 //            }
 //        }
     }
