@@ -18,6 +18,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -31,7 +32,7 @@ import java.util.logging.Logger;
  */
 public class Room extends Thread {
 
-    private volatile LinkedHashMap<String, Player> players;
+    private volatile LinkedHashMap<String, Player> players;                 // manage the player list
     private volatile BlockingQueue<Command> commandsQueue;
     private String idRoom;
     private volatile Boolean status;
@@ -162,7 +163,7 @@ public class Room extends Thread {
     public void bangAction(Player player) {
         Bullet[] bullets = this.bullets.get(player);
         Hero hero = this.heros.get(player);
-        for(int i = 0; i < bullets.length; i++){
+        for (int i = 0; i < bullets.length; i++) {
             bang(bullets[i], hero, i, player);
         }
         this.bullets.put(player, bullets);
@@ -196,13 +197,13 @@ public class Room extends Thread {
                         break;
                 }
             }
-                
+
             // remove the FlyingObject was shot
             FlyingObject t = this.flyings[index];
             this.flyings[index] = this.flyings[this.flyings.length - 1];
             this.flyings[this.flyings.length - 1] = t;
             this.flyings = Arrays.copyOf(this.flyings, this.flyings.length - 1);
-            
+
             // remove bullet if it shoot the plane
             Bullet[] oldBullets = this.bullets.get(player);
             Bullet bulletToRemove = oldBullets[bulletIndex];
@@ -264,28 +265,42 @@ public class Room extends Thread {
                     String[] msg = command.getMessage().split("\\|");
                     System.out.println(command.getMessage());
                     enterAction();
-                    String[] heroPos = msg[0].split(",");
-                    Hero hero = new Hero(Integer.parseInt(heroPos[0]), Integer.parseInt(heroPos[1]));
-                    this.heros.put(command.getPlayer(), hero);
-                    if (msg.length > 1 && !msg[1].equals("")) {
-                        String[] bulletStrs = msg[1].split(";");
-                        Bullet[] bullets = new Bullet[bulletStrs.length];
-                        for (int i = 0; i < bulletStrs.length; i++) {
-                            if (!bulletStrs[i].equals("")) {
-                                String[] bulletPos = bulletStrs[i].split(",");
+                    int numberOfPlayer = Integer.valueOf(msg[0]);   
+                    for (int i = 0; i < numberOfPlayer; i++) {
+                        String userName = msg[3 * i + 1];
+                        String[] positionStrs = msg[3 * i + 2].split(",");
+                        this.heros.get(userName).x = Integer.valueOf(positionStrs[0]);
+                        this.heros.get(userName).y = Integer.valueOf(positionStrs[1]);
+                        if (!msg[3 * i + 3].equals("")) {
+                            String[] bulletStrs = msg[3 * i + 3].split(";");
+                            Bullet[] bulletList = new Bullet[bulletStrs.length];
+                            for (int j = 0; j < bulletStrs.length; j++) {
+                                String[] bulletPos = bulletStrs[j].split(",");
                                 Bullet bullet = new Bullet(Integer.parseInt(bulletPos[0]), Integer.parseInt(bulletPos[1]));
-                                bullets[i] = bullet;
+                                bulletList[j] = bullet;
                             }
+                            this.bullets.put(players.get(userName), bulletList);
                         }
-                        this.bullets.put(command.getPlayer(), bullets);
                     }
+                    if (msg.length > 3 * numberOfPlayer + 1 && !msg[3 * numberOfPlayer + 1].equals("")) {
+                            String[] flyStrs = msg[2].split(";");
+                            FlyingObject[] flies = new FlyingObject[flyStrs.length];
+                            for (int i = 0; i < flies.length; i++) {
+                                if (!flyStrs[i].equals("")) {
+                                    String[] bulletPos = flyStrs[i].split(",");
+                                    FlyingObject fly = new Airplane(Integer.parseInt(bulletPos[0]), Integer.parseInt(bulletPos[1]));
+                                    flies[i] = fly;
+                                }
+                            }
+                            flyings = Arrays.copyOf(flies, flies.length);
+                        }
                     enterAction();
                     stepAction(command.getPlayer());
                     shootAction(command.getPlayer());
                     bangAction(command.getPlayer());
                     outOfBoundsAction(command.getPlayer());
                     isGameOver(command.getPlayer());
-                    String state = getStateGame(command.getPlayer());
+                    String state = getStateGame();
                     sendStateGame(state, command.getPlayer());
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Room.class.getName()).log(Level.SEVERE, null, ex);
@@ -294,15 +309,20 @@ public class Room extends Thread {
         }
     }
 
-    private String getStateGame(Player player) {
-        Hero hero = this.heros.get(player);
-        Bullet[] bullets = this.bullets.get(player);
+    private String getStateGame() {
         String state = "";
-        state += hero.toString() + "|";
-        for (Bullet b : bullets) {
-            state += b.toString() + ";";
+        state += Integer.toString(players.size()) + "|";
+        for (Map.Entry<String, Player> entry : players.entrySet()) {
+            String key = entry.getKey();
+            Bullet[] bulletList = bullets.get(entry.getValue());
+            state += key + "|";
+            Hero hero = heros.get(entry.getValue());
+            state += hero.toString() + "|";
+            for (Bullet b : bulletList) {
+                state += b.toString() + ";";
+            }
+            state += "|";
         }
-        state += "|";
         for (FlyingObject f : flyings) {
             state += f.toString() + ";";
         }

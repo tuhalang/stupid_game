@@ -40,6 +40,7 @@ public class ShootGame extends JPanel {
     public static BufferedImage hero1; 
 
     private Communication communication;
+    private int numberOfPlayer;
     
     private Hero myHero = new Hero();
     private String myID;
@@ -47,7 +48,7 @@ public class ShootGame extends JPanel {
     private Bullet[] bullets = {};
     private LinkedHashMap<String, UserState> userStates = new LinkedHashMap<String, UserState>();
     private LinkedHashMap<String, Hero> heroHashMap = new LinkedHashMap<String, Hero>();
-   
+    
     static {
         try {
             background = ImageIO.read(ShootGame.class.getResource("background.jpg"));
@@ -66,6 +67,7 @@ public class ShootGame extends JPanel {
 
     public ShootGame() {
         communication = Communication.getIntance("127.0.0.1", 8888, this);
+        myID = Communication.ID;
     }
 
     public static FlyingObject nextOne() {
@@ -367,12 +369,18 @@ public class ShootGame extends JPanel {
     }
 
     public void paintBullets(Graphics g) {
+        for (int i = 0; i < bullets.length; i++) { 
+            Bullet b = bullets[i];
+            g.drawImage(b.image, b.x, b.y, null); 
+        } 
         for(Map.Entry<String, UserState> entry : userStates.entrySet()){
-            Bullet[] bulletList = entry.getValue().getBullets();
-            for (int i = 0; i < bulletList.length; i++) { 
-                Bullet b = bulletList[i];
-                g.drawImage(b.image, b.x, b.y, null); 
-            }    
+            if(!entry.getKey().equals(myID)){
+                Bullet[] bulletList = entry.getValue().getBullets();
+                for (int i = 0; i < bulletList.length; i++) { 
+                    Bullet b = bulletList[i];
+                    g.drawImage(b.image, b.x, b.y, null); 
+                } 
+            }     
         }
     }
 
@@ -386,12 +394,14 @@ public class ShootGame extends JPanel {
         if(!heroHashMap.containsKey(myID)){
             heroHashMap.put(myID, myHero);
         }
+        state += Integer.toString(numberOfPlayer) + "|";
         for (Map.Entry<String, UserState> entry : userStates.entrySet()) {
             String key = entry.getKey();
             Bullet[] bulletList = entry.getValue().getBullets();
+            state += key + "|";
             Hero hero = heroHashMap.get(key);
             state += hero.toString() + "|";
-            for (Bullet b : bullets) {
+            for (Bullet b : bulletList) {
                 state += b.toString() + ";";
             }
             state += "|";
@@ -422,6 +432,10 @@ public class ShootGame extends JPanel {
         this.myID = myID;
     }
 
+    public void setNumberOfPlayer(int numberOfPlayer){
+        this.numberOfPlayer = this.numberOfPlayer;
+    }
+    
     public static void main(String[] args) {
         JFrame frame = new JFrame("Fly"); 
         ShootGame game = new ShootGame(); 

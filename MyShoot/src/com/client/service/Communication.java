@@ -10,7 +10,6 @@ import com.client.shoot.UserState;
 import com.model.Airplane;
 import com.model.Bullet;
 import com.model.FlyingObject;
-import com.model.Hero;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -117,14 +116,15 @@ public class Communication {
                         message = messagesQueue.take();
                         System.out.println(message);
                         String[] objs = message.split("\\|");
-                        int numberOfplayer = Integer.valueOf(objs[0]);                                              // get the number of player in the room
+                        int numberOfPlayer = Integer.valueOf(objs[0]);                                              // get the number of player in the room
+                        shootGame.setNumberOfPlayer(numberOfPlayer);
                         LinkedHashMap<String, UserState> userStates = new LinkedHashMap<String, UserState>();       // get the state of all user
-                        for (int i = 0; i < numberOfplayer; i++) {
+                        for (int i = 0; i < numberOfPlayer; i++) {
                             String userName = objs[3 * i + 1];
                             String[] positionStrs = objs[3 * i + 2].split(",");
                             int[] position = {Integer.parseInt(positionStrs[0]), Integer.parseInt(positionStrs[1])};
                             UserState uState = null;
-                            if (!objs[3 * i + 3].equals("")) {
+                            if (objs.length > 3 * i + 3 && !objs[3 * i + 3].equals("")) {
                                 String[] bulletStrs = objs[3 * i + 3].split(";");
                                 Bullet[] bullets = new Bullet[bulletStrs.length];
                                 for (int j = 0; j < bulletStrs.length; j++) {
@@ -140,7 +140,7 @@ public class Communication {
                             }
                         }
                         shootGame.setUserStates(userStates);
-                        if (objs.length > 2 && !objs[2].equals("")) {
+                        if (objs.length > 3 * numberOfPlayer + 1 && !objs[3 * numberOfPlayer + 1].equals("")) {
                             String[] flyStrs = objs[2].split(";");
                             FlyingObject[] flies = new FlyingObject[flyStrs.length];
                             for (int i = 0; i < flies.length; i++) {
@@ -152,7 +152,6 @@ public class Communication {
                             }
                             shootGame.setFlyings(flies);
                         }
-
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Communication.class.getName()).log(Level.SEVERE, null, ex);
                     }
