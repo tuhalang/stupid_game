@@ -8,6 +8,7 @@ public class Hero extends FlyingObject {
     private int doubleFire;
     private BufferedImage[] images = {};
     private int index;
+    private int indexShoot;
 
     public Hero() {
         image = Config.hero0;
@@ -19,6 +20,7 @@ public class Hero extends FlyingObject {
         doubleFire = 0;
         images = new BufferedImage[]{Config.hero0, Config.hero1};
         index = 0;
+        indexShoot = 0;
     }
 
     public Hero(int x, int y) {
@@ -101,6 +103,14 @@ public class Hero extends FlyingObject {
 
     public boolean outOfBounds() {
         return false;
+    }
+
+    public int getIndexShoot() {
+        return indexShoot;
+    }
+
+    public void setIndexShoot(int indexShoot) {
+        this.indexShoot = indexShoot;
     }
 
     public boolean hit(FlyingObject other) {

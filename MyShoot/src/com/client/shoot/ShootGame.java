@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ShootGame extends JPanel {
 
@@ -27,7 +28,7 @@ public class ShootGame extends JPanel {
     public static final int PAUSE = 2;
     public static final int GAME_OVER = 3;
     private int state = 0;
-
+    
     public static BufferedImage background;         // the background image
     public static BufferedImage start;                   
     public static BufferedImage pause;
@@ -36,16 +37,17 @@ public class ShootGame extends JPanel {
     public static BufferedImage bee;
     public static BufferedImage bullet;
     public static BufferedImage hero0;
-    public static BufferedImage hero1;
+    public static BufferedImage hero1; 
 
     private Communication communication;
-    private Hero hero = new Hero();
     
-    private Hero[] guestHero = {};
-    private LinkedHashMap<Hero, Bullet[]> guestBullet = new LinkedHashMap<>();
+    private Hero myHero = new Hero();
+    private String myID;
     private FlyingObject[] flyings = {};
     private Bullet[] bullets = {};
-
+    private LinkedHashMap<String, UserState> userStates = new LinkedHashMap<String, UserState>();
+    private LinkedHashMap<String, Hero> heroHashMap = new LinkedHashMap<String, Hero>();
+   
     static {
         try {
             background = ImageIO.read(ShootGame.class.getResource("background.jpg"));
@@ -89,24 +91,43 @@ public class ShootGame extends JPanel {
 
     /* All the element make a step */
     public void stepAction() {
-        hero.step();
+        for (Map.Entry<String, Hero> entry : heroHashMap.entrySet()) {
+            String key = entry.getKey();
+            Hero hero = entry.getValue();
+            hero.step();
+        }
         for (int i = 0; i < flyings.length; i++) {
             flyings[i].step();
         }
-        for (int i = 0; i < bullets.length; i++) {
-            bullets[i].step();
+        for (Map.Entry<String, UserState> entry : userStates.entrySet()) {
+            String key = entry.getKey();
+            UserState value = entry.getValue();
+            Bullet[] bulletList = value.getBullets();
+            for (int i = 0; i < bulletList.length; i++) {
+                bulletList[i].step();
+            }
+            
         }
+        
     }
 
-    int shootIndex = 0;
-
-    public void shootAction() {
+    public void shootAction(){
+        for (Map.Entry<String, Hero> entry : heroHashMap.entrySet()) {
+            String key = entry.getKey();
+            shootAction(key);
+        }
+    }
+    
+    public void shootAction(String userID) {
+        Hero heroToShoot = heroHashMap.get(userID);
+        int shootIndex = heroToShoot.getIndexShoot();
         shootIndex++;                           // Increase bullet by 1 for each 10 miliseconds
         if (shootIndex % 30 == 0) {             // 10*30=300 (shoot every 300 miliseconds)
-            Bullet[] bs = hero.shoot();
+            Bullet[] bs = heroHashMap.get(userID).shoot();
             bullets = Arrays.copyOf(bullets, bullets.length + bs.length);
             System.arraycopy(bs, 0, bullets, bullets.length - bs.length, bs.length);
         }
+        heroToShoot.setIndexShoot(shootIndex);
     }
 
     int score = 0;                              // initialize the score of user
@@ -115,15 +136,19 @@ public class ShootGame extends JPanel {
      * Bullet collide with the enemy
      */
     public void bangAction() {
-        for (int i = 0; i < bullets.length; i++) { 
-            bang(bullets[i], i); 
+        for(Map.Entry<String, UserState> entry : userStates.entrySet()){
+            String userID = entry.getKey();
+            Bullet[] bullets = entry.getValue().getBullets();
+            for (int i = 0; i < bullets.length; i++) { 
+                bang(userID, bullets[i], i); 
+            }
         }
     }
 
     /**
      * Handle when bullet hit the enemy
      */
-    public void bang(Bullet b, int bulletIndex) {
+    public void bang(String userID, Bullet b, int bulletIndex) {
         int index = -1; // mark the enemy which is shoot
         for (int i = 0; i < flyings.length; i++) { 
             FlyingObject f = flyings[i]; 
@@ -136,18 +161,18 @@ public class ShootGame extends JPanel {
             // check if find the hit enemy
             FlyingObject one = flyings[index];      // get the hit object
             if (one instanceof Enemy) {             
-                Enemy e = (Enemy) one; 
+                Enemy e = (Enemy) one;
                 score += e.getScore();              // achieve score
             }
             if (one instanceof Award) {  
                 Award a = (Award) one; 
                 int type = a.getType(); 
                 switch (type) {           
-                    case Award.DOUBLE_FIRE: 
-                        hero.addDoubleFire(); 
+                    case Award.DOUBLE_FIRE:
+                        heroHashMap.get(userID).addDoubleFire(); 
                         break;
                     case Award.LIFE:    
-                        hero.addLife();
+                        heroHashMap.get(userID).addLife();
                         break;
                 }
             }
@@ -159,28 +184,18 @@ public class ShootGame extends JPanel {
             flyings = Arrays.copyOf(flyings, flyings.length - 1);
 
             // remove bullet if it shoot the plane
-
-            Bullet[] newBullets = new Bullet[bullets.length - 1];
-            for (int i = 0; i < bullets.length; i++) { 
+            
+            Bullet[] bulletList = userStates.get(userID).getBullets();
+            Bullet[] newBullets = new Bullet[bulletList.length - 1];
+            for (int i = 0; i < bulletList.length; i++) { 
                 if(i < bulletIndex)
-                    newBullets[i] = bullets[i];
+                    newBullets[i] = bulletList[i];
                 else if(i == bulletIndex);
                 else
-                    newBullets[i - 1] = bullets[i];
+                    newBullets[i - 1] = bulletList[i];
             }
-            bullets = newBullets;
-            
-            
-            
-            /* 
-            
-            
-            This is still not work
-            
-            
-            */
-            
-            
+            bulletList = newBullets;
+            userStates.get(userID).setBullets(bulletList);
             
         }
     }
@@ -201,23 +216,29 @@ public class ShootGame extends JPanel {
         flyings = Arrays.copyOf(flyingLives, index);
 
         index = 0;
-        Bullet[] bulletLives = new Bullet[bullets.length];
-        for (int i = 0; i < bullets.length; i++) {
-            Bullet b = bullets[i];
-            if (!b.outOfBounds()) {
-                bulletLives[index++] = b;
+        
+        for(Map.Entry<String, UserState> entry : userStates.entrySet()){
+            String key = entry.getKey();
+            Bullet[] bulletList = entry.getValue().getBullets();
+            Bullet[] bulletLives = new Bullet[bulletList.length];
+            for (int i = 0; i < bulletList.length; i++) {
+                Bullet b = bulletList[i];
+                if (!b.outOfBounds()) {
+                    bulletLives[index++] = b;
+                }
+                bulletList = Arrays.copyOf(bulletLives, index);
+                entry.getValue().setBullets(bulletList);
             }
         }
-        bullets = Arrays.copyOf(bulletLives, index);
     }
 
     public void checkGameOverAction() {
-        if (isGameOver()) {
+        if (isGameOver(myHero)) {
             state = GAME_OVER;
         }
     }
 
-    public boolean isGameOver() {
+    public boolean isGameOver(Hero hero) {
         for (int i = 0; i < flyings.length; i++) {
             int index = -1;
             FlyingObject f = flyings[i];
@@ -237,7 +258,7 @@ public class ShootGame extends JPanel {
     }
 
     private Timer timer;
-    private int intervel = 10;
+    private int interval = 10;
 
     public void action() {
         MouseAdapter l = new MouseAdapter() {
@@ -245,7 +266,7 @@ public class ShootGame extends JPanel {
                 if (state == RUNNING) { 
                     int x = e.getX(); 
                     int y = e.getY(); 
-                    hero.moveTo(x, y); 
+                    myHero.moveTo(x, y);
                 }
             }
 
@@ -256,7 +277,8 @@ public class ShootGame extends JPanel {
                         break;
                     case GAME_OVER: 
                         score = 0;  
-                        hero = new Hero();
+                        myHero = new Hero();
+                        myID = Communication.ID;
                         flyings = new FlyingObject[0];
                         bullets = new Bullet[0];
                         state = START; 
@@ -294,21 +316,18 @@ public class ShootGame extends JPanel {
                 }
                 repaint();
             }
-        }, intervel, intervel);
+        }, interval, interval);
     }
 
     public void paint(Graphics g) {
-        g.drawImage(background, 0, 0, null); //������ͼ
-        paintHero(g); //��Ӣ�ۻ�����
-        paintFlyingObjects(g); //�����˶���
-        paintBullets(g); //���ӵ�����
-        paintScore(g); //���ֺͻ���
-        paintState(g); //��״̬
+        g.drawImage(background, 0, 0, null); 
+        paintHero(g); 
+        paintFlyingObjects(g); 
+        paintBullets(g); 
+        paintScore(g); 
+        paintState(g); 
     }
 
-    /**
-     * ��״̬
-     */
     public void paintState(Graphics g) {
         switch (state) { 
             case START: 
@@ -323,75 +342,84 @@ public class ShootGame extends JPanel {
         }
     }
 
-    /**
-     * ���ֺͻ���
-     */
     public void paintScore(Graphics g) {
-        g.setColor(new Color(0xFF0000)); //������ɫ(0xFF0000Ϊ����)
-        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20)); //��������(Font.SANS_SERIFΪ����,Font.BOLDΪ������ʽ,20Ϊ�ֺ�)
-        g.drawString("SCORE: " + score, 10, 25); //����
-        g.drawString("LIFE: " + hero.getLife(), 10, 45); //����
+        g.setColor(new Color(0xFF0000)); 
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20)); 
+        g.drawString("SCORE: " + score, 10, 25); 
+        g.drawString("LIFE: " + myHero.getLife(), 10, 45); 
     }
 
-    /**
-     * ��Ӣ�ۻ�
-     */
     public void paintHero(Graphics g) {
-        g.drawImage(hero.image, hero.x, hero.y, null);
-        for (Hero ghero : this.guestHero) {
-            g.drawImage(ghero.image, ghero.x, ghero.y, null);
+        g.drawImage(myHero.image, myHero.x, myHero.y, null);
+        for (Map.Entry<String, Hero> entry : heroHashMap.entrySet()) {
+            if(entry.getKey() != myID){
+                Hero hero = entry.getValue();
+                g.drawImage(hero.image, hero.x, hero.y, null);
+            }
         }
     }
 
-    /**
-     * ������
-     */
     public void paintFlyingObjects(Graphics g) {
-        for (int i = 0; i < flyings.length; i++) { //�������е���
-            FlyingObject f = flyings[i]; //��ȡÿһ������
-            g.drawImage(f.image, f.x, f.y, null); //�����˶���
+        for (int i = 0; i < flyings.length; i++) { 
+            FlyingObject f = flyings[i];
+            g.drawImage(f.image, f.x, f.y, null);
         }
     }
 
-    /**
-     * ���ӵ�
-     */
     public void paintBullets(Graphics g) {
-        for (int i = 0; i < bullets.length; i++) { 
-            Bullet b = bullets[i];
-            g.drawImage(b.image, b.x, b.y, null); 
+        for(Map.Entry<String, UserState> entry : userStates.entrySet()){
+            Bullet[] bulletList = entry.getValue().getBullets();
+            for (int i = 0; i < bulletList.length; i++) { 
+                Bullet b = bulletList[i];
+                g.drawImage(b.image, b.x, b.y, null); 
+            }    
         }
-//        for (Bullet gBullets : guestBullet) {
-//            for (int i = 0; i < gBullets.length; i++) { 
-//                Bullet b = gBullets[i]; 
-//                g.drawImage(b.image, b.x, b.y, null);
-//            }
-//        }
     }
 
     private String getStateGame() {
         String state = "";
-        state += hero.toString() + "|";
-        for (Bullet b : bullets) {
-            state += b.toString() + ";";
+        if(!userStates.containsKey(myID)){
+            int[] position = {myHero.x, myHero.y};
+            UserState u = new UserState(position, bullets);
+            userStates.put(myID, u);    
         }
-        state += "|";
+        if(!heroHashMap.containsKey(myID)){
+            heroHashMap.put(myID, myHero);
+        }
+        for (Map.Entry<String, UserState> entry : userStates.entrySet()) {
+            String key = entry.getKey();
+            Bullet[] bulletList = entry.getValue().getBullets();
+            Hero hero = heroHashMap.get(key);
+            state += hero.toString() + "|";
+            for (Bullet b : bullets) {
+                state += b.toString() + ";";
+            }
+            state += "|";
+        }
         for (FlyingObject f : flyings) {
             state += f.toString() + ";";
         }
         return state;
     }
-
-    public void setHero(Hero hero) {
-        this.hero = hero;
-    }
-
+    
     public void setFlyings(FlyingObject[] flyings) {
         this.flyings = flyings;
     }
 
     public void setBullets(Bullet[] bullets) {
         this.bullets = bullets;
+    }
+    
+    public void setUserStates(LinkedHashMap<String, UserState> userStates) {
+        this.userStates = userStates;
+    }
+
+    public void setMyHero(Hero myHero) {
+        this.myHero = myHero;
+    }
+
+    public void setMyID(String myID) {
+        this.myID = myID;
     }
 
     public static void main(String[] args) {
@@ -406,6 +434,5 @@ public class ShootGame extends JPanel {
         frame.setVisible(true); 
 
         game.action(); 
-
     }
 }

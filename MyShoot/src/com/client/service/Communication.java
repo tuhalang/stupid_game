@@ -34,7 +34,7 @@ public class Communication {
 
     private volatile Socket socket;
     private volatile BlockingQueue<String> messagesQueue;
-    private final String ID = UUID.randomUUID().toString();
+    public static final String ID = UUID.randomUUID().toString();
     private ShootGame shootGame;
 
     private static Communication communication;
@@ -111,25 +111,35 @@ public class Communication {
             @Override
             public void run() {
                 while (!messagesQueue.isEmpty()) {
-                    String message;
+                    // structure: <number of user> | user1_name | position 1 | bullet 1 | user2_name | position 2 | bullet 2 | ... | userN_name | position n | bullet n | enemy_position
+                    String message;                    
                     try {
                         message = messagesQueue.take();
                         System.out.println(message);
                         String[] objs = message.split("\\|");
-                        String[] heroPos = objs[0].split(",");
-                        Hero hero = new Hero(Integer.parseInt(heroPos[0]), Integer.parseInt(heroPos[1]));
-                        shootGame.setHero(hero);
-                        if (objs.length > 1 && !objs[1].equals("")) {
-                            String[] bulletStrs = objs[1].split(";");
-                            Bullet[] bullets = new Bullet[bulletStrs.length];
-                            for (int i = 0; i < bulletStrs.length; i++) {
-                                String[] bulletPos = bulletStrs[i].split(",");
-                                Bullet bullet = new Bullet(Integer.parseInt(bulletPos[0]), Integer.parseInt(bulletPos[1]));
-                                bullets[i] = bullet;
+                        int numberOfplayer = Integer.valueOf(objs[0]);                                              // get the number of player in the room
+                        LinkedHashMap<String, UserState> userStates = new LinkedHashMap<String, UserState>();       // get the state of all user
+                        for (int i = 0; i < numberOfplayer; i++) {
+                            String userName = objs[3 * i + 1];
+                            String[] positionStrs = objs[3 * i + 2].split(",");
+                            int[] position = {Integer.parseInt(positionStrs[0]), Integer.parseInt(positionStrs[1])};
+                            UserState uState = null;
+                            if (!objs[3 * i + 3].equals("")) {
+                                String[] bulletStrs = objs[3 * i + 3].split(";");
+                                Bullet[] bullets = new Bullet[bulletStrs.length];
+                                for (int j = 0; j < bulletStrs.length; j++) {
+                                    String[] bulletPos = bulletStrs[j].split(",");
+                                    Bullet bullet = new Bullet(Integer.parseInt(bulletPos[0]), Integer.parseInt(bulletPos[1]));
+                                    bullets[j] = bullet;
+                                }
+                                uState = new UserState(position, bullets);
                             }
-                            shootGame.setBullets(bullets);
-                            System.out.println(bullets.length);
+                            userStates.put(userName, uState);
+                            if(userName.equals(ID)){
+                                shootGame.setMyID(userName);
+                            }
                         }
+                        shootGame.setUserStates(userStates);
                         if (objs.length > 2 && !objs[2].equals("")) {
                             String[] flyStrs = objs[2].split(";");
                             FlyingObject[] flies = new FlyingObject[flyStrs.length];
@@ -146,52 +156,6 @@ public class Communication {
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Communication.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    
-
-                    // temp code
-
-                    // structure: <number of user> | user1_name | position 1 | bullet 1 | user2_name | position 2 | bullet 2 | ... | userN_name | position n | bullet n | enemy_position
-//                    String message;                    
-//                    try {
-//                        message = messagesQueue.take();
-//                        System.out.println(message);
-//                        String[] objs = message.split("\\|");
-//                        int numberOfplayer = Integer.valueOf(objs[0]);                                              // get the number of player in the room
-//                        LinkedHashMap<String, UserState> userStates = new LinkedHashMap<String, UserState>();       // get the state of all user
-//                        for (int i = 0; i < numberOfplayer; i++) {
-//                            String userName = objs[3 * i + 1];
-//                            String[] positionStrs = objs[3 * i + 2].split(",");
-//                            int[] position = {Integer.parseInt(positionStrs[0]), Integer.parseInt(positionStrs[1])};
-//                            UserState uState = null;
-//                            if (!objs[3 * i + 3].equals("")) {
-//                                String[] bulletStrs = objs[3 * i + 3].split(";");
-//                                Bullet[] bullets = new Bullet[bulletStrs.length];
-//                                for (int j = 0; j < bulletStrs.length; j++) {
-//                                    String[] bulletPos = bulletStrs[j].split(",");
-//                                    Bullet bullet = new Bullet(Integer.parseInt(bulletPos[0]), Integer.parseInt(bulletPos[1]));
-//                                    bullets[j] = bullet;
-//                                }
-//                                uState = new UserState(position, bullets);
-//                            }
-//                            userStates.put(userName, uState);
-//                        }
-//                        
-//                        if (objs.length > 2 && !objs[2].equals("")) {
-//                            String[] flyStrs = objs[2].split(";");
-//                            FlyingObject[] flies = new FlyingObject[flyStrs.length];
-//                            for (int i = 0; i < flies.length; i++) {
-//                                if (!flyStrs[i].equals("")) {
-//                                    String[] bulletPos = flyStrs[i].split(",");
-//                                    FlyingObject fly = new Airplane(Integer.parseInt(bulletPos[0]), Integer.parseInt(bulletPos[1]));
-//                                    flies[i] = fly;
-//                                }
-//                            }
-//                            shootGame.setFlyings(flies);
-//                        }
-//
-//                    } catch (InterruptedException ex) {
-//                        Logger.getLogger(Communication.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
 
                 }
             }
