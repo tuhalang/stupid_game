@@ -1,7 +1,7 @@
 package com.model;
 
 public class Bullet extends FlyingObject {
-	private int speed = 10;
+	private int speed = 3;
 	
 	public Bullet(int x,int y){
 		image = Config.bullet; 

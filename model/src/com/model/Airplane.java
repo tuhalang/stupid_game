@@ -2,7 +2,7 @@ package com.model;
 
 public class Airplane extends FlyingObject implements Enemy {
 
-    private int speed = 5;
+    private int speed = 2;
 
     public Airplane() {
         image = Config.airplane;

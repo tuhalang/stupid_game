@@ -46,6 +46,7 @@ public class Room extends Thread {
     private LinkedHashMap<Player, Bullet[]> bullets = new LinkedHashMap<>();
     private LinkedHashMap<Player, Integer> scores = new LinkedHashMap<>();
     private LinkedHashMap<Player, Integer> lifes = new LinkedHashMap<>();
+    private LinkedHashMap<Player, Integer> shootIndex = new LinkedHashMap<>();
 
     public Room() {
         this.idRoom = UUID.randomUUID().toString();
@@ -63,6 +64,7 @@ public class Room extends Thread {
                 this.bullets.put(player, bullets);
                 this.scores.put(player, 0);
                 this.lifes.put(player, 3);
+                this.shootIndex.put(player, 0);
             }
         } else {
             throw new Exception("The list is full !");
@@ -124,7 +126,7 @@ public class Room extends Thread {
 
     public void enterAction() {
         flyEnteredIndex++;
-        if ((flyEnteredIndex %= 20) == 0) {
+        if ((flyEnteredIndex %= 50) == 0) {
             FlyingObject obj = nextOne();
             flyings = Arrays.copyOf(flyings, flyings.length + 1);
             flyings[flyings.length - 1] = obj;
@@ -135,29 +137,32 @@ public class Room extends Thread {
         Hero hero = this.heros.get(player);
         Bullet[] bullets = this.bullets.get(player);
         hero.step();
-        for (int i = 0; i < flyings.length; i++) {
-            flyings[i].step();
-        }
         for (int i = 0; i < bullets.length; i++) {
             bullets[i].step();
         }
         this.heros.put(player, hero);
         this.bullets.put(player, bullets);
     }
+    
+    public void fliesAction(){
+        for (int i = 0; i < flyings.length; i++) {
+            flyings[i].step();
+        }
+    }
 
-    int shootIndex = 0;
 
     public void shootAction(Player player) {
-        shootIndex++;
+        int index = this.shootIndex.get(player);
         Hero hero = this.heros.get(player);
         Bullet[] bullets = this.bullets.get(player);
-        if (shootIndex % 30 == 0) { //10*30=300
+        if ((index %= 70) == 0) { //10*30=300
             Bullet[] bs = hero.shoot();
             bullets = Arrays.copyOf(bullets, bullets.length + bs.length);
             System.arraycopy(bs, 0, bullets, bullets.length - bs.length, bs.length);
         }
         this.heros.put(player, hero);
         this.bullets.put(player, bullets);
+        this.shootIndex.put(player, index);
     }
 
     public void bangAction(Player player) {
@@ -260,7 +265,7 @@ public class Room extends Thread {
                 try {
                     int t = 0;
                     String state = "";
-                    while (!commandsQueue.isEmpty() && t < 5) {
+                    while (!commandsQueue.isEmpty() && t < 10) {
                         Command command = commandsQueue.take();
                         if (command.getMessage().startsWith("1") && this.isRunning) {
                             String[] msg = command.getMessage().substring(1).split("\\|");
@@ -311,13 +316,14 @@ public class Room extends Thread {
                                 for (Player player : players.values()) {
                                     sendStateGame("2", player);
                                 }
-
+                                Thread.sleep(5000);
                                 this.isRunning = true;
                             }
                         }
                     }
 
                     if (!state.equals("")) {
+                        fliesAction();
                         for (Player player : players.values()) {
                             sendStateGame(state, player);
                         }

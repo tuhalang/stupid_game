@@ -27,3 +27,4 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+/Plane-Shooting-Game-in-Java/MyShoot/nbproject/private/

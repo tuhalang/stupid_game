@@ -75,7 +75,7 @@ public class HomeController {
                             listener.setCommandsQueue(room.getCommandsQueue());
                             game.setRoom(room.getIdRoom(), room);
                             LOGGER.info("USER: " + username + " JOINED ROOM " + room.getIdRoom());
-                            if(room.getNumOfMemmber()==2){
+                            if(room.getNumOfMemmber()==3){
                                 room.startGame();
                             }
                             LOGGER.info("NUM OF MEMMBER: " + room.getNumOfMemmber());
