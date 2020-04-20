@@ -58,11 +58,13 @@ public class HomeController {
                     String username = bufferedReader.readLine();
 
                     
-                    // create WorkerThread to handle request for each client
-                    Listener listener = new Listener(socket);
-                    listener.setSystemQueue(systemController.getSystemQueue());
+                    
 
-                    Player player = new Player(username, listener);
+                    Player player = new Player(username, socket);
+                    
+                    // create WorkerThread to handle request for each client
+                    Listener listener = new Listener(player);
+                    listener.setSystemQueue(systemController.getSystemQueue());
                     
                     if(GameConfig.AUTO_ASSIGN_ROOM){
                         
@@ -70,15 +72,17 @@ public class HomeController {
                         Room room = game.getEmptyRoom();
                         if(room != null){
                             room.setPlayer(username, player);
-                            player.getListener().setCommandsQueue(room.getCommandsQueue());
+                            listener.setCommandsQueue(room.getCommandsQueue());
                             game.setRoom(room.getIdRoom(), room);
                             LOGGER.info("USER: " + username + " JOINED ROOM " + room.getIdRoom());
+                            if(room.getNumOfMemmber()==2){
+                                room.startGame();
+                            }
                             LOGGER.info("NUM OF MEMMBER: " + room.getNumOfMemmber());
                         }else{
                             LOGGER.error("================= MAX ZOOM ==================");
                         }
                     }
-                    
                     
                     executorService.execute(listener);
 

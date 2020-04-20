@@ -11,10 +11,10 @@ package com.server.controller;
  */
 import com.server.common.GameConfig;
 import com.server.model.Command;
+import com.server.model.Player;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import org.apache.log4j.Logger;
 
@@ -24,16 +24,16 @@ public class Listener extends Thread {
 
     private int flag = 1;
 
-    private Socket socket;
-    
     // queue for game
     private BlockingQueue<Command> commandsQueue;
     
     // queue for action system such as login, regsiter, join room
     private BlockingQueue<Command> systemQueue;
+    
+    private Player player;
 
-    public Listener(Socket socket) {
-        this.socket = socket;
+    public Listener(Player player) {
+        this.player = player;
     }
 
     @Override
@@ -43,27 +43,29 @@ public class Listener extends Thread {
         
         try {
             while (flag == 1) {
-                inputStreamReader = new InputStreamReader(this.socket.getInputStream());
+                inputStreamReader = new InputStreamReader(this.player.getSocket().getInputStream());
                 bufferedReader = new BufferedReader(inputStreamReader);
                 String content = bufferedReader.readLine();
                 if (content != null) {
                     if(content.startsWith(GameConfig.CONTROL_GAME_CODE)){
                         if(this.commandsQueue != null){
-                            this.commandsQueue.offer(new Command(socket, content, System.currentTimeMillis()));
+                            StackTraceElement[] e = this.getStackTrace();
+                            this.commandsQueue.offer(new Command(this.player, content.substring(1), System.currentTimeMillis()));
                         }
                     }else if(content.startsWith(GameConfig.LOGIN_CODE)){ 
                         if(this.systemQueue != null){
-                            this.systemQueue.offer(new Command(socket, content));
+                            this.systemQueue.offer(new Command(this.player, content));
                         }
                     }else if(content.startsWith(GameConfig.JOIN_ROOM_CODE)){
                         if(this.systemQueue != null){
-                            this.systemQueue.offer(new Command(socket, content));
+                            this.systemQueue.offer(new Command(this.player, content));
                         }
                     }
                 }
             }
         } catch (IOException e) {
             LOGGER.error(e);
+            this.player.setStatus(Boolean.FALSE);
         } finally {
             if (bufferedReader != null) {
                 try {
@@ -81,9 +83,9 @@ public class Listener extends Thread {
                 }
             }
 
-            if (socket != null) {
+            if (this.player.getSocket() != null) {
                 try {
-                    socket.close();
+                    this.player.getSocket().close();
 
                 } catch (IOException e) {
                     LOGGER.error(e);
@@ -92,14 +94,14 @@ public class Listener extends Thread {
         }
     }
 
-    public Socket getSocket() {
-        return socket;
+    public Player getPlayer() {
+        return player;
     }
 
-    public void setSocket(Socket socket) {
-        this.socket = socket;
+    public void setPlayer(Player player) {
+        this.player = player;
     }
-
+    
     public int getFlag() {
         return flag;
     }

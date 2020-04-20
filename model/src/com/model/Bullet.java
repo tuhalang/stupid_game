@@ -1,22 +1,28 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.model;
 
-/**
- *
- * @author tuhalang
- */
-public class Bullet extends Point{
-    private int velocity;
-    private Direction direction;
+public class Bullet extends FlyingObject {
+	private int speed = 10;
+	
+	public Bullet(int x,int y){
+		image = Config.bullet; 
+		width = image.getWidth();  
+		height = image.getHeight(); 
+		this.x = x;
+		this.y = y;
+	}
+	
+	public void step(){
+		y -= speed; 
+	}
+
+	public boolean outOfBounds(){
+		return this.y < -this.height; 
+	}
 
     @Override
-    public void move() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public String toString() {
+        return x+","+y;
     }
-    
-    
+        
+        
 }

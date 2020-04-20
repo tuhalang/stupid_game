@@ -56,7 +56,7 @@ public class Game {
     
     public synchronized Room getEmptyRoom(){
         for(Room room : rooms.values()){
-            if(!room.isFull()){
+            if(!room.isFull() && !room.getIsRunning()){
                 return room;
             }
         }

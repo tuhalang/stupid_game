@@ -393,17 +393,17 @@ public class ShotPlaneFrame extends JFrame {
                                     Rectangle2D rectangle2D = new Rectangle2D.Double(x * 20 + 10, y * 20 + 10, 20, 20);
                                     switch (result) {
                                         case 0: {
-                                            gameDisplayComponent.putRectangle(rectangle2D, Color.WHITE);
+                                            gameDisplayComponent.putRectangle(rectangle2D);
                                             chatDisplayArea.append("does not hit the plane\n");
                                             break;
                                         }
                                         case 1: {
-                                            gameDisplayComponent.putRectangle(rectangle2D, Color.BLUE);
+                                            gameDisplayComponent.putRectangle(rectangle2D);
                                             chatDisplayArea.append("hit the body of the plane\n");
                                             break;
                                         }
                                         case 2: {
-                                            gameDisplayComponent.putRectangle(rectangle2D, Color.BLUE);
+                                            gameDisplayComponent.putRectangle(rectangle2D);
                                             chatDisplayArea.append("hit down the plane, you win\n");
                                             break;
                                         }
