@@ -245,7 +245,7 @@ public class ShootGame extends JPanel {
     }
 
     private Timer timer;
-    private int intervel = 50;
+    private int intervel = 40;
 
     public void action() {
         MouseAdapter l = new MouseAdapter() {

@@ -108,7 +108,6 @@ public class Room extends Thread {
     }
 
     public void startGame() {
-        this.isRunning = Boolean.TRUE;
         this.start();
     }
 
@@ -265,7 +264,7 @@ public class Room extends Thread {
                 try {
                     int t = 0;
                     String state = "";
-                    while (!commandsQueue.isEmpty() && t < 10) {
+                    while (!commandsQueue.isEmpty() && t < 5) {
                         Command command = commandsQueue.take();
                         if (command.getMessage().startsWith("1") && this.isRunning) {
                             String[] msg = command.getMessage().substring(1).split("\\|");
