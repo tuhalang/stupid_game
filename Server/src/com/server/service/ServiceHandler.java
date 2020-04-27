@@ -11,6 +11,9 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.server.bean.Command;
+import com.server.bean.Game;
+import com.server.bean.Player;
+import com.server.bean.Room;
 import com.server.common.Config;
 import com.server.common.SocketUtil;
 import java.io.IOException;
@@ -19,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -44,9 +49,9 @@ public class ServiceHandler extends Thread {
     private void startService() {
         this.start();
     }
-    
-    static{
-    
+
+    static {
+
     }
 
     public static ServiceHandler getIntance() {
@@ -73,29 +78,29 @@ public class ServiceHandler extends Thread {
                 try {
                     Command command = commandQueue.take();
                     String message = command.getMessaage();
-                    Socket socket = command.getSocket();
+                    Player player = command.getPlayer();
                     if (message.startsWith(Config.LOGIN_CODE)) {
-                        actionLogin(socket, message.substring(1));
+                        actionLogin(player, message.substring(1));
                     } else if (message.startsWith(Config.REGISTER_CODE)) {
-                        actionRegister(socket, message.substring(1));
+                        actionRegister(player, message.substring(1));
                     }
-                } catch (InterruptedException ex) {
+                } catch (InterruptedException | IOException ex) {
                     // LOGGING
-                } catch (IOException ex) {
-                    // LOGGING
+                } catch (Exception ex) {
+                    Logger.getLogger(ServiceHandler.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
     }
 
     //msg = username|password
-    private void actionLogin(Socket socket, String msg) throws IOException {
+    private void actionLogin(Player player, String msg) throws IOException, Exception {
         String[] msgs = msg.split("\\|");
+        Socket socket = player.getSocket();
         if (msgs.length == 2) {
             String username = msgs[0];
             String password = msgs[1];
 
-            
             DBCollection collection = datasource.getCollection("users");
             BasicDBObject whereQuery = new BasicDBObject();
             whereQuery.put("username", username);
@@ -105,7 +110,16 @@ public class ServiceHandler extends Thread {
             // authentication
             if (cursor.hasNext()) {
                 // assign room
-                // TODO
+                player.setUsername(username);
+                Game game = Game.getIntance();
+                Room room = game.getEmptyRoom();
+                room.setPlayer(username, player);
+                player.setCommandsQueue(room.getCommandsQueue());
+                game.setRoom(room.getIdRoom(), room);
+                System.out.println("AUTO ASSIGN ROOM " + room.getIdRoom());
+                if (room.getNumOfMemmber() == 2) {
+                    room.startGame();
+                }
 
                 // response
                 String userMsg = "LOGIN SUCCESSFULLY !";
@@ -115,10 +129,13 @@ public class ServiceHandler extends Thread {
             String userMsg = "LOGIN FAILED !";
             SocketUtil.sendViaTcp(socket, userMsg);
         }
+        String userMsg = "LOGIN FAILED !";
+        SocketUtil.sendViaTcp(socket, userMsg);
     }
 
-    private void actionRegister(Socket socket, String msg) throws IOException {
+    private void actionRegister(Player player, String msg) throws IOException {
         String[] msgs = msg.split("\\|");
+        Socket socket = player.getSocket();
         if (msgs.length == 2) {
             String username = msgs[0];
             String password = msgs[1];
@@ -147,6 +164,9 @@ public class ServiceHandler extends Thread {
             String userMsg = "REGISTER SUCCESSFULLY ! PLEASE LOGIN !";
             SocketUtil.sendViaTcp(socket, userMsg);
         }
+        // response faild cause duplicate username
+        String userMsg = "REGISTER FAILED !";
+        SocketUtil.sendViaTcp(socket, userMsg);
     }
 
 }

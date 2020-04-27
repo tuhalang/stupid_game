@@ -6,12 +6,13 @@
 package com.server.listener;
 
 import com.server.bean.Command;
+import com.server.bean.Player;
 import com.server.common.Config;
 import com.server.service.ServiceHandler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.Socket;
+import java.util.concurrent.BlockingQueue;
 
 /**
  *
@@ -19,12 +20,12 @@ import java.net.Socket;
  */
 public class ClientListener extends Thread {
 
-    private Socket socket;
-    private ServiceHandler serviceHandler;
+    private final Player player;
+    private final ServiceHandler serviceHandler;
     private volatile Boolean isRunning;
 
-    public ClientListener(Socket socket) {
-        this.socket = socket;
+    public ClientListener(Player player) {
+        this.player = player;
         this.serviceHandler = ServiceHandler.getIntance();
         this.isRunning = Boolean.TRUE;
     }
@@ -35,14 +36,16 @@ public class ClientListener extends Thread {
         InputStreamReader inputStreamReader = null;
         try {
             while (isRunning) {
-
-                inputStreamReader = new InputStreamReader(this.socket.getInputStream());
+                inputStreamReader = new InputStreamReader(this.player.getSocket().getInputStream());
                 bufferedReader = new BufferedReader(inputStreamReader);
                 String content = bufferedReader.readLine();
                 if (content != null) {
-                    System.out.println(content);
                     if (content.startsWith(Config.ACCESS_CODE)) {
-                        serviceHandler.pushCommand(new Command(socket, content.substring(1)));
+                        serviceHandler.pushCommand(new Command(this.player, content.substring(1)));
+                    }else if(content.startsWith(Config.CONTROL_CODE)){
+                        if(this.player != null){
+                            this.player.pushCommand(content.substring(1));
+                        }
                     }
                 }
             }
@@ -63,9 +66,9 @@ public class ClientListener extends Thread {
                 }
             }
 
-            if (this.socket != null) {
+            if (this.player.getSocket() != null) {
                 try {
-                    this.socket.close();
+                    this.player.getSocket().close();
 
                 } catch (IOException e) {
                 }

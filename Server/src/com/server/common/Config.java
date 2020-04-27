@@ -21,5 +21,13 @@ public class Config {
     public static final String START_GAME_CODE = "1";
     public static final String MOVE_CODE = "2";
     
+    public static final Boolean AUTO_ASSIGN_ROOM = Boolean.TRUE;
+    public static final int MAX_POOL = 30;
+    public static final int FREQ_GEN_FLY = 50;
+    
+    public static final int SIZE_BATCH = 5;
+    
+    public static final int PORT = 8888;
+    
     
 }

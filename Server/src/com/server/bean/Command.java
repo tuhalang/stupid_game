@@ -5,18 +5,16 @@
  */
 package com.server.bean;
 
-import java.net.Socket;
-
 /**
  *
  * @author tuhalang
  */
 public class Command {
     private String messaage;
-    private Socket socket;
+    private Player player;
     
-    public Command(Socket socket, String message){
-        this.socket = socket;
+    public Command(Player player, String message){
+        this.player = player;
         this.messaage = message;
     }
 
@@ -28,15 +26,12 @@ public class Command {
         this.messaage = messaage;
     }
 
-    public Socket getSocket() {
-        return socket;
+    public Player getPlayer() {
+        return player;
     }
 
-    public void setSocket(Socket socket) {
-        this.socket = socket;
+    public void setPlayer(Player player) {
+        this.player = player;
     }
-    
-    
-    
-    
+
 }

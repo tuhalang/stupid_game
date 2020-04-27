@@ -5,6 +5,9 @@
  */
 package com.server.controller;
 
+import com.server.bean.Game;
+import com.server.bean.Player;
+import com.server.common.Config;
 import com.server.listener.ClientListener;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,16 +28,20 @@ public class HomeController {
 
     public static void main(String[] args) {
 
-        ExecutorService executorService = Executors.newFixedThreadPool(30);
+        // Init Game
+        Game game = Game.getIntance();
+        
+        ExecutorService executorService = Executors.newFixedThreadPool(Config.MAX_POOL);
         ServerSocket serverSocket = null;
 
         try {
-            serverSocket = new ServerSocket(8888);
+            serverSocket = new ServerSocket(Config.PORT);
             
             while (flag) {
                 try {
                     Socket socket = serverSocket.accept();
-                    ClientListener listener = new ClientListener(socket);
+                    Player player = new Player(socket);
+                    ClientListener listener = new ClientListener(player);
                     executorService.execute(listener);
                 } catch (IOException e) {
                     
