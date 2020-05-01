@@ -117,19 +117,19 @@ public class ServiceHandler extends Thread {
                 player.setCommandsQueue(room.getCommandsQueue());
                 game.setRoom(room.getIdRoom(), room);
                 System.out.println("AUTO ASSIGN ROOM " + room.getIdRoom());
-                if (room.getNumOfMemmber() == 2) {
+                if (room.getNumOfMemmber() == 1) {
                     room.startGame();
                 }
 
                 // response
-                String userMsg = "LOGIN SUCCESSFULLY !";
+                String userMsg = "0LOGIN SUCCESSFULLY !";
                 SocketUtil.sendViaTcp(socket, userMsg);
                 return;
             }
-            String userMsg = "LOGIN FAILED !";
+            String userMsg = "1LOGIN FAILED !";
             SocketUtil.sendViaTcp(socket, userMsg);
         }
-        String userMsg = "LOGIN FAILED !";
+        String userMsg = "1LOGIN FAILED !";
         SocketUtil.sendViaTcp(socket, userMsg);
     }
 
@@ -148,7 +148,7 @@ public class ServiceHandler extends Thread {
             if (cursor.hasNext()) {
 
                 // response faild cause duplicate username
-                String userMsg = "REGISTER FAILED !";
+                String userMsg = "1REGISTER FAILED !";
                 SocketUtil.sendViaTcp(socket, userMsg);
                 return;
             }
@@ -161,11 +161,11 @@ public class ServiceHandler extends Thread {
             collection.insert(userObj);
 
             // response success
-            String userMsg = "REGISTER SUCCESSFULLY ! PLEASE LOGIN !";
+            String userMsg = "0REGISTER SUCCESSFULLY ! PLEASE LOGIN !";
             SocketUtil.sendViaTcp(socket, userMsg);
         }
         // response faild cause duplicate username
-        String userMsg = "REGISTER FAILED !";
+        String userMsg = "1REGISTER FAILED !";
         SocketUtil.sendViaTcp(socket, userMsg);
     }
 

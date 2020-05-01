@@ -104,9 +104,30 @@ public class Room {
     public synchronized void setStatus(Boolean status) {
         this.status = status;
     }
+    
+    private void initGame(){
+        flyings = new FlyingObject[0];
+        
+        for(Player player : players.values()){
+            heros.put(player, new Hero(0, 0));
+            bullets.put(player, new Bullet[0]);
+        }
+    }
+    
+    private boolean checkFinishGame(){
+        for(Player player : players.values()){
+            if(player.getStatus()) return false;
+        }
+        // SAVE DATABASE
+        // TODO
+        
+        isRunning = false;
+        initGame();
+        return true;
+    }
 
     public void startGame() {
-        this.isRunning = true;
+        initGame();
         try {
             Thread.sleep(5000);
         } catch (InterruptedException ex) {

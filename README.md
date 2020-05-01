@@ -1,40 +1,76 @@
 ## This is a stupid game we do to pass Network Programming Subject :((
 
-## Mô tả API 
+## Description API 
 
-1. Login
+### I. Protocol
 
-- Khi đăng nhập sẽ sử dụng username và password.
-- Nếu đăng nhập thành công sẽ trả về một chuỗi các roomId có thể join được ngăn cách bởi dấu phẩy.
+| Type         | Prefix      |
+|--------------|-------------|
+| Login        |      00     |
+| Register     |      01     |
+| Start Game   |      10     |
+| Control Game |      11     |
 
-- request:
-    ```
-    1{"username":"","password":""}
-    ```
-- response:
-    ```
-    0{"roomId":[1111,123]}
-    ```
+#### 1. Login
 
-2. Join room 
+- Request:
+    ```
+    00username|password
+    ```
+- Response:
+    
+    + Success:
 
-- request:
-    ```
-    2{"romeId":""}
-    ```
-- response:
+        ```
+        000LOGIN SUCCESSFULLY !
+        ```
 
-    + thành công: 0
-    + thất bại: 1
+    + Failed:
 
-3. Control game
+        ```
+        001LOGIN FAILED !
+        ```
+#### 2. Register
+- Request:
+    ```
+    01username|password
+    ```
+- Response:
 
-- request:
+    + Success:
+        ```
+        010REGISTER SUCCESSFULLY ! PLEASE LOGIN !
+        ```
+    + Failed:
+        ```
+        011REGISTER FAILED !
+        ```
+#### 3. Start Game
+- Request:
     ```
-    3{"username":"","direction":1,"shot":true,"plane":{"lon":12,"lan":12,bullets:[{"lon":12,"lan":12}, ...]}}
+    10
     ```
+- Response:
 
-- response:
+    + Success:
+        ```
+        // TODO 
+        ```
+
+    + Failed:
+        ```
+        // TODO 
+        ```
+
+
+#### 4. Control Game
+- Request:
     ```
-    0{"bot":[{"lon":12,"lan":12}, ...]},"planes":[{"active":true,"lon":12,"lan":12,bullets:[{"lon":12,"lan":12}, ...]}},...]
+    11hero|bullets
     ```
+- Response:
+
+    + Success:
+        ```
+        110flyings|player1|player2|...
+        ```
