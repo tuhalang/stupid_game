@@ -118,6 +118,7 @@ public final class Communication {
                         
                         String[] items = message.split("\\|");
                         if (items.length > 0) {
+                            // Get the state of the flying objects
                             if (!items[0].equals("")) {
                                 String[] flyingStrs = items[0].split(";");
                                 int length = flyingStrs.length;
@@ -138,6 +139,7 @@ public final class Communication {
                         LinkedHashMap<String, Hero> guestHero = new LinkedHashMap<>();
                         LinkedHashMap<Hero, Bullet[]> guestBullet = new LinkedHashMap<>();
                         for (int i = 1; i < items.length;) {
+                            // get the state of the different users
                             if (username.equals(items[i])) {
                                 String uname = null;
                                 String[] posStr = null;
@@ -176,9 +178,7 @@ public final class Communication {
                                     shootGame.setBullets(bullets);
                                 }
                                 
-                                
-                                
-                                
+                                         
                             }else{
                                 String uname = null;
                                 String[] posStr = null;

@@ -7,7 +7,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.Graphics;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Arrays;
@@ -16,7 +15,6 @@ import java.awt.event.MouseEvent;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.LinkedHashMap;
-import javax.swing.JOptionPane;
 
 public class ShootGame extends JPanel {
 
@@ -39,6 +37,9 @@ public class ShootGame extends JPanel {
     public static BufferedImage bullet;
     public static BufferedImage hero0;
     public static BufferedImage hero1;
+    
+    private static JFrame frame;
+    private static JPanel loginPanel;
 
     private final Communication communication;
     private Hero hero = new Hero();
@@ -257,10 +258,17 @@ public class ShootGame extends JPanel {
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Fly"); 
-        ShootGame game = new ShootGame(); 
+        frame = new JFrame("Fly"); 
+        ShootGame game = new ShootGame();
         frame.add(game);
-
+        
+        loginPanel = new JPanel();
+        LoginForm login = new LoginForm(game.communication);
+        
+        loginPanel.setAlignmentY(CENTER_ALIGNMENT);
+        loginPanel.add(login);
+        frame.add(loginPanel);
+        
         frame.setSize(WIDTH, HEIGHT);
         frame.setAlwaysOnTop(true); 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
