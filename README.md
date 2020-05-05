@@ -54,12 +54,12 @@
 
     + Success:
         ```
-        // TODO 
+        100player1|player2|...
         ```
 
     + Failed:
         ```
-        // TODO 
+        101
         ```
 
 
@@ -73,4 +73,22 @@
     + Success:
         ```
         110flyings|player1|player2|...
+        ```
+- Note:
+    
+    + Hero:
+        ```
+        x,y
+        ```
+    + Bullet:
+        ```
+        x1,y1;x2,y2;...
+        ```
+    + Flyings:
+        ```
+        x1,y1;x2,y2,...
+        ```
+    + Player:
+        ```
+        hero|score|life|bullets
         ```
