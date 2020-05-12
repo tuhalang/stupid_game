@@ -6,6 +6,7 @@
 package com.client.service;
 
 import com.client.ui.ShootGame;
+import static com.client.ui.ShootGame.loginState;
 import com.model.Airplane;
 import com.model.Bullet;
 import com.model.FlyingObject;
@@ -24,6 +25,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -45,7 +47,7 @@ public final class Communication {
             this.messagesQueue = new ArrayBlockingQueue<>(10240);
             this.shootGame = shootGame;
             this.username = "phamhung";
-            send("00phamhung|123456");
+//            send("00phamhung|123456");
             receive();
             handle();
         } catch (IOException ex) {
@@ -84,38 +86,60 @@ public final class Communication {
             public void run() {
                 System.out.println("IS LISTENING MESSAGE");
                 while (socket.isConnected()) {
-
                     try {
                         InputStreamReader isr = new InputStreamReader(socket.getInputStream());
                         BufferedReader br = new BufferedReader(isr);
                         String message = br.readLine();
+                        System.out.println(message);
                         if (message != null) {
+                            if (message.contains("LOGIN")) {
+                                if (message.startsWith("0")) {
+                                    shootGame.loginState = 1;
+//                                    shootGame.loginStartGame();
+                                } else{
+                                    JOptionPane.showMessageDialog(null, "Login sai");
+                                }
+                            } else {
+                                shootGame.loginState = 2;
+                            }
+                        } else if (message.contains("REGISTER")) {
+                            if (message.startsWith("0")) {
+                                shootGame.loginState = -1;
+                            } else {
+                                shootGame.loginState = -2;
+                            }
+                        } else {
                             messagesQueue.offer(message);
                         }
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
                     }
 
-                }
-                System.out.println("socket is closed");
+            }
+
+            System.out.println (
+        
+    
+    "socket is closed");
             }
 
         };
         Thread thread = new Thread(run);
-        thread.start();
-    }
 
-    private void handle() {
+    thread.start ();
+}
+
+private void handle() {
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
-            public void run() {
+        public void run() {
                 while (!messagesQueue.isEmpty()) {
                     String message;
                     try {
                         message = messagesQueue.take();
                         System.out.println(message);
-                        
+
                         String[] items = message.split("\\|");
                         if (items.length > 0) {
                             // Get the state of the flying objects
@@ -135,7 +159,7 @@ public final class Communication {
                                 shootGame.setFlyings(flyings);
                             }
                         }
-                        
+
                         LinkedHashMap<String, Hero> guestHero = new LinkedHashMap<>();
                         LinkedHashMap<Hero, Bullet[]> guestBullet = new LinkedHashMap<>();
                         for (int i = 1; i < items.length;) {
@@ -146,29 +170,33 @@ public final class Communication {
                                 String scoreStr = null;
                                 String lifeStr = null;
                                 String[] bulletStrs = null;
-                                
-                                uname = items[i]; i++;
-                                posStr = items[i].split(","); i++;
-                                scoreStr = items[i]; i++;
-                                lifeStr = items[i]; i++;
-                                if(i < items.length && !items[i].equals("")){
+
+                                uname = items[i];
+                                i++;
+                                posStr = items[i].split(",");
+                                i++;
+                                scoreStr = items[i];
+                                i++;
+                                lifeStr = items[i];
+                                i++;
+                                if (i < items.length && !items[i].equals("")) {
                                     bulletStrs = items[i].split(";");
                                 }
                                 i++;
-                                
+
                                 Hero hero = new Hero(Integer.parseInt(posStr[0]),
                                         Integer.parseInt(posStr[1]),
                                         Integer.parseInt(scoreStr),
                                         Integer.parseInt(lifeStr));
                                 shootGame.setHero(hero);
-                                
-                                if(bulletStrs != null){
+
+                                if (bulletStrs != null) {
                                     int length = bulletStrs.length;
                                     Bullet[] bullets = new Bullet[length];
-                                    for(int j=0; j<length; j++){
-                                        if(!bulletStrs[j].equals("")){
+                                    for (int j = 0; j < length; j++) {
+                                        if (!bulletStrs[j].equals("")) {
                                             String[] posBStr = bulletStrs[j].split(",");
-                                            if(posStr.length == 2){
+                                            if (posStr.length == 2) {
                                                 Bullet bullet = new Bullet(Integer.parseInt(posBStr[0]),
                                                         Integer.parseInt(posBStr[1]));
                                                 bullets[j] = bullet;
@@ -177,38 +205,40 @@ public final class Communication {
                                     }
                                     shootGame.setBullets(bullets);
                                 }
-                                
-                                         
-                            }else{
+
+                            } else {
                                 String uname = null;
                                 String[] posStr = null;
                                 String scoreStr = null;
                                 String lifeStr = null;
                                 String[] bulletStrs = null;
-                                
-                                uname = items[i]; i++;
-                                posStr = items[i].split(","); i++;
-                                scoreStr = items[i]; i++;
-                                lifeStr = items[i]; i++;
-                                if(i < items.length && !items[i].equals("")){
+
+                                uname = items[i];
+                                i++;
+                                posStr = items[i].split(",");
+                                i++;
+                                scoreStr = items[i];
+                                i++;
+                                lifeStr = items[i];
+                                i++;
+                                if (i < items.length && !items[i].equals("")) {
                                     bulletStrs = items[i].split(";");
                                 }
                                 i++;
-                                
-                                
+
                                 Hero hero = new Hero(Integer.parseInt(posStr[0]),
                                         Integer.parseInt(posStr[1]),
                                         Integer.parseInt(scoreStr),
                                         Integer.parseInt(lifeStr));
                                 guestHero.put(uname, hero);
-                                
-                                if(bulletStrs != null){
+
+                                if (bulletStrs != null) {
                                     int length = bulletStrs.length;
                                     Bullet[] bullets = new Bullet[length];
-                                    for(int j=0; j<length; j++){
-                                        if(!bulletStrs[j].equals("")){
+                                    for (int j = 0; j < length; j++) {
+                                        if (!bulletStrs[j].equals("")) {
                                             String[] posBStr = bulletStrs[j].split(",");
-                                            if(posStr.length == 2){
+                                            if (posStr.length == 2) {
                                                 Bullet bullet = new Bullet(Integer.parseInt(posBStr[0]),
                                                         Integer.parseInt(posBStr[1]));
                                                 bullets[j] = bullet;
@@ -219,12 +249,17 @@ public final class Communication {
                                 }
                             }
                         }
-                        
+
                         shootGame.setGuestHero(guestHero);
                         shootGame.setGuestBullet(guestBullet);
 
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(Communication.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(Communication
+
+.class  
+
+
+.getName()).log(Level.SEVERE, null, ex);
                     }
 
                 }

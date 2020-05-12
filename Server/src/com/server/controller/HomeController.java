@@ -16,6 +16,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -25,6 +26,8 @@ public class HomeController {
     
     
     public static Boolean flag = Boolean.TRUE;
+    
+    private static final Logger LOGGER = Logger.getLogger(HomeController.class);
 
     public static void main(String[] args) {
 
@@ -44,9 +47,9 @@ public class HomeController {
                     ClientListener listener = new ClientListener(player);
                     executorService.execute(listener);
                 } catch (IOException e) {
-                    
+                    LOGGER.error(e, e);
                 } catch (Exception ex) {
-                    
+                    LOGGER.error(ex, ex);
                 }
             }
         } catch (IOException e) {

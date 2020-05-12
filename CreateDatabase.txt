@@ -1,6 +1,6 @@
 use game;
 db.createCollection('users');
-db.customers.insert(
+db.users.insert(
 		{username: "tuhalang", password: "123456"},
 		{username: "phamhung", password: "123456"},
 		{username: "test", password: "123456"}		

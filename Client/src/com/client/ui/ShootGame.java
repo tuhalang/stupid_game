@@ -15,6 +15,11 @@ import java.awt.event.MouseEvent;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.LinkedHashMap;
+import javax.swing.Box;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 public class ShootGame extends JPanel {
 
@@ -37,17 +42,24 @@ public class ShootGame extends JPanel {
     public static BufferedImage bullet;
     public static BufferedImage hero0;
     public static BufferedImage hero1;
-    
+
     private static JFrame frame;
     private static JPanel loginPanel;
+    private static LoginForm login;
+    private static JPanel mainPanel;
 
     private final Communication communication;
     private Hero hero = new Hero();
-    
+
     private LinkedHashMap<String, Hero> guestHero = new LinkedHashMap<>();
     private LinkedHashMap<Hero, Bullet[]> guestBullet = new LinkedHashMap<>();
     private FlyingObject[] flyings = {};
     private Bullet[] bullets = {};
+
+    private static ShootGame game;
+    private String username;
+
+    public static int loginState;  // 0 - start | 1 - login success | 2 - login failed | -1 - register success | -2 register failed
 
     static {
         try {
@@ -67,20 +79,20 @@ public class ShootGame extends JPanel {
 
     public ShootGame() {
         communication = Communication.getIntance("127.0.0.1", 8888, this);
+        loginState = 0;
     }
 
     public void checkGameOverAction() {
-        if (hero.getLife()==0) {
+        if (hero.getLife() == 0) {
             state = GAME_OVER;
         }
     }
-   
 
     int shootIndex = 0;
 
     public void shootAction() {
         shootIndex++;
-        if ((shootIndex %= 10) == 0) { 
+        if ((shootIndex %= 10) == 0) {
             Bullet[] bs = hero.shoot();
             bullets = Arrays.copyOf(bullets, bullets.length + bs.length);
             System.arraycopy(bs, 0, bullets, bullets.length - bs.length, bs.length);
@@ -110,33 +122,31 @@ public class ShootGame extends JPanel {
     public void setState(int state) {
         this.state = state;
     }
-    
+
     private Timer timer;
     private int intervel = 50;
 
     public void action() {
         MouseAdapter l = new MouseAdapter() {
             public void mouseMoved(MouseEvent e) {
-                if (state == RUNNING) { 
-                    int x = e.getX(); 
-                    int y = e.getY(); 
-                    hero.moveTo(x, y); 
+                if (state == RUNNING) {
+                    int x = e.getX();
+                    int y = e.getY();
+                    hero.moveTo(x, y);
                 }
             }
 
             public void mouseClicked(MouseEvent e) {
                 switch (state) {
                     case START:
-                        state = RUNNING;
-                        break;
-//                        if (isReady) {
-//                            state = RUNNING;
-//                            break;
-//                        } else {
-//                            JOptionPane.showMessageDialog(new JFrame(), "Wating other player ...", "Infomation",
-//                                    JOptionPane.INFORMATION_MESSAGE);
-//                            communication.send("42");
-//                        }
+//                        state = RUNNING;
+//                        break;
+                        if (isLogin()) {
+                            state = RUNNING;
+                            break;
+                        } else {
+                            createLoginForm();
+                        }
                     case GAME_OVER:
                         hero = new Hero();
                         flyings = new FlyingObject[0];
@@ -153,18 +163,18 @@ public class ShootGame extends JPanel {
             }
 
             public void mouseEntered(MouseEvent e) {
-                if (state == PAUSE) {  
-                    state = RUNNING; 
+                if (state == PAUSE) {
+                    state = RUNNING;
                 }
             }
         };
-        this.addMouseListener(l); 
-        this.addMouseMotionListener(l); 
+        this.addMouseListener(l);
+        this.addMouseMotionListener(l);
 
         timer = new Timer();
         timer.schedule(new TimerTask() {
             public void run() {
-                if (state == RUNNING) { 
+                if (state == RUNNING) {
                     shootAction();
                     //checkGameOverAction();
                     String state = getStateGame();
@@ -176,17 +186,16 @@ public class ShootGame extends JPanel {
     }
 
     public void paint(Graphics g) {
-        g.drawImage(background, 0, 0, null); 
-        paintHero(g); 
-        paintFlyingObjects(g); 
+        g.drawImage(background, 0, 0, null);
+        paintHero(g);
+        paintFlyingObjects(g);
         paintBullets(g);
-        paintScore(g); 
+        paintScore(g);
         paintState(g);
     }
 
-    
     public void paintState(Graphics g) {
-        switch (state) { 
+        switch (state) {
             case START:
                 g.drawImage(start, 0, 0, null);
                 break;
@@ -199,14 +208,12 @@ public class ShootGame extends JPanel {
         }
     }
 
-    
     public void paintScore(Graphics g) {
         g.setColor(new Color(0xFF0000));
         g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
         g.drawString("SCORE: " + hero.getScore(), 10, 25);
         g.drawString("LIFE: " + hero.getLife(), 10, 45);
     }
-
 
     public void paintHero(Graphics g) {
         g.drawImage(hero.image, hero.x, hero.y, null);
@@ -217,21 +224,22 @@ public class ShootGame extends JPanel {
 
     public void paintFlyingObjects(Graphics g) {
         for (int i = 0; i < flyings.length; i++) {
-            FlyingObject f = flyings[i]; 
-            if(f != null)
+            FlyingObject f = flyings[i];
+            if (f != null) {
                 g.drawImage(f.image, f.x, f.y, null);
+            }
         }
     }
 
     public void paintBullets(Graphics g) {
-        for (int i = 0; i < bullets.length; i++) { 
-            Bullet b = bullets[i]; 
-            g.drawImage(b.image, b.x, b.y, null); 
+        for (int i = 0; i < bullets.length; i++) {
+            Bullet b = bullets[i];
+            g.drawImage(b.image, b.x, b.y, null);
         }
         for (Bullet[] gBullets : guestBullet.values()) {
-            for (int i = 0; i < gBullets.length; i++) { 
-                Bullet b = gBullets[i]; 
-                g.drawImage(b.image, b.x, b.y, null); 
+            for (int i = 0; i < gBullets.length; i++) {
+                Bullet b = gBullets[i];
+                g.drawImage(b.image, b.x, b.y, null);
             }
         }
     }
@@ -257,24 +265,72 @@ public class ShootGame extends JPanel {
         this.bullets = bullets;
     }
 
-    public static void main(String[] args) {
-        frame = new JFrame("Fly"); 
-        ShootGame game = new ShootGame();
-        frame.add(game);
-        
-        loginPanel = new JPanel();
-        LoginForm login = new LoginForm(game.communication);
-        
-        loginPanel.setAlignmentY(CENTER_ALIGNMENT);
-        loginPanel.add(login);
-        frame.add(loginPanel);
-        
-        frame.setSize(WIDTH, HEIGHT);
-        frame.setAlwaysOnTop(true); 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-        frame.setLocationRelativeTo(null); 
-        frame.setVisible(true); 
+    private boolean isLogin() {
+        return (loginState == 1);
+    }
 
+    public static void createLoginForm() {
+        JTextField username = new JTextField();
+        JTextField password = new JPasswordField();
+        Object[] message = {
+            "Username:", username,
+            "Password:", password
+        };
+        int option = JOptionPane.showOptionDialog(null,
+                message,
+                "Feedback",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                new String[]{"LOGIN", "REGISTER", "CANCEL"}, // this is the array
+                "default");
+        if (option == JOptionPane.OK_OPTION) {
+            String uname = username.getText();
+            String pwd = password.getText();
+            if (uname != "" && pwd != "") {
+                String mess = "";
+                mess += uname + "|" + pwd;
+                mess = "00" + mess;
+                System.out.println(mess);
+                game.communication.send(mess);
+            } else {
+                JOptionPane.showMessageDialog(null, "Two field must be filled");
+            }
+            game.communication.send("00" + username.getText() + "|" + password.getText());
+        } else {
+            System.out.println("Login canceled");
+        }
+    }
+
+    public static void main(String[] args) {
+        frame = new JFrame("Fly");
+
+        game = new ShootGame();
+//        mainPanel = new JPanel();
+        frame.add(game);
+//        login = new LoginForm(game.communication);
+
+        frame.setSize(WIDTH, HEIGHT);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
+        frame.setVisible(true);
+
+        game.action();
+
+        createLoginForm();
+    }
+
+    public void loginStartGame() {
+        game = new ShootGame();
+        mainPanel.remove(login);
+        mainPanel.add(game);
+        mainPanel.setSize(WIDTH, HEIGHT);
+        frame.setSize(WIDTH, HEIGHT);
+        frame.setAlwaysOnTop(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
         game.action();
 
     }

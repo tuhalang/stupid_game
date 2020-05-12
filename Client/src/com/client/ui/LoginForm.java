@@ -16,6 +16,8 @@ import java.awt.event.ActionListener;
 public class LoginForm extends javax.swing.JPanel {
 
     public Communication communication;
+    public boolean isLogin;
+    private String uname;
 
     /**
      * Creates new form LoginForm
@@ -33,8 +35,9 @@ public class LoginForm extends javax.swing.JPanel {
                 }
             }
         });
-        btnRegister.addActionListener(new LoginRegisterButton());
-        btnLogin.addActionListener(new LoginRegisterButton());
+        ActionListener buttonAction = new LoginRegisterButton();
+        btnRegister.addActionListener(buttonAction);
+        btnLogin.addActionListener(buttonAction);
     }
 
     /**
@@ -208,30 +211,36 @@ public class LoginForm extends javax.swing.JPanel {
     private javax.swing.JTextField txtFieldUserName;
     private javax.swing.JPasswordField txtPassword;
     // End of variables declaration//GEN-END:variables
-
+    
+    public String getUname(){
+        return this.uname;
+    }
+    
     private class LoginRegisterButton implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String mess = null;
-            String uname = txtFieldUserName.getText();
-            String pwd = txtPassword.getPassword().toString();
-            if (uname != "" && pwd != "") {
+            String mess = "";
+            uname = txtFieldUserName.getText();
+            char[] pwdChar = txtPassword.getPassword();
+            String pwd = new String(pwdChar);
+            if (uname != "" && pwdChar.length != 0) {
                 mess += uname + "|" + pwd;
                 if (e.getActionCommand().toLowerCase().equals("login")) {
-                    mess = "0" + mess;
+                    mess = "00" + mess;
+                    System.out.println(mess);
                     communication.send(mess);
                 } else if (e.getActionCommand().toLowerCase().equals("register")) {
                     if(uname.contains("|") || pwd.contains("|")){
                         lblerrorInform.setText("Must not include special character!");
                     }
-                    mess = "1" + mess;
+                    mess = "01" + mess;
+                    System.out.println(mess);
                     communication.send(mess);
                 }
             } else {
                 lblerrorInform.setText("Two field must be filled");
             }
         }
-
     }
 }
