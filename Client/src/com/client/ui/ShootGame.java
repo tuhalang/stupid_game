@@ -143,10 +143,10 @@ public class ShootGame extends JPanel {
 //                        break;
                         if (isLogin()) {
                             state = RUNNING;
-                            break;
                         } else {
                             createLoginForm();
                         }
+                        break;
                     case GAME_OVER:
                         hero = new Hero();
                         flyings = new FlyingObject[0];
@@ -284,7 +284,8 @@ public class ShootGame extends JPanel {
                 null,
                 new String[]{"LOGIN", "REGISTER", "CANCEL"}, // this is the array
                 "default");
-        if (option == JOptionPane.OK_OPTION) {
+        if (option == JOptionPane.YES_OPTION) {
+            // handle if click LOGIN
             String uname = username.getText();
             String pwd = password.getText();
             if (uname != "" && pwd != "") {
@@ -296,8 +297,23 @@ public class ShootGame extends JPanel {
             } else {
                 JOptionPane.showMessageDialog(null, "Two field must be filled");
             }
-            game.communication.send("00" + username.getText() + "|" + password.getText());
-        } else {
+        } else if (option == JOptionPane.NO_OPTION) {
+            // handle if click REGISTER
+            String uname = username.getText();
+            String pwd = password.getText();
+            if (uname != "" && pwd != "") {
+                if (uname.contains("|") || pwd.contains("|")) {
+                    JOptionPane.showMessageDialog(null, "Must not include special character!");
+                } else {
+                    String mess = "";
+                    mess += uname + "|" + pwd;
+                    mess = "01" + mess;
+                    System.out.println(mess);
+                    game.communication.send(mess);
+                }
+            }else {
+                JOptionPane.showMessageDialog(null, "Two field must be filled");
+            }
             System.out.println("Login canceled");
         }
     }
@@ -332,6 +348,5 @@ public class ShootGame extends JPanel {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         game.action();
-
     }
 }

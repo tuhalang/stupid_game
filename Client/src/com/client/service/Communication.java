@@ -47,7 +47,6 @@ public final class Communication {
             this.messagesQueue = new ArrayBlockingQueue<>(10240);
             this.shootGame = shootGame;
             this.username = "phamhung";
-//            send("00phamhung|123456");
             receive();
             handle();
         } catch (IOException ex) {
@@ -95,45 +94,44 @@ public final class Communication {
                             if (message.contains("LOGIN")) {
                                 if (message.startsWith("0")) {
                                     shootGame.loginState = 1;
-//                                    shootGame.loginStartGame();
-                                } else{
-                                    JOptionPane.showMessageDialog(null, "Login sai");
+                                    System.out.println("Login Succesfull");
+                                } else {
+                                    shootGame.loginState = 2;
+                                    JOptionPane.showMessageDialog(null, "Login fail, please try again");
+                                }
+                            } else if (message.contains("REGISTER")) {
+                                if (message.startsWith("0")) {
+                                    shootGame.loginState = -1;
+                                    System.out.println("Register Succesfull");
+                                } else {
+                                    shootGame.loginState = -2;
+                                    JOptionPane.showMessageDialog(null, "Register fail, please try again");
                                 }
                             } else {
-                                shootGame.loginState = 2;
+                                messagesQueue.offer(message);
                             }
-                        } else if (message.contains("REGISTER")) {
-                            if (message.startsWith("0")) {
-                                shootGame.loginState = -1;
-                            } else {
-                                shootGame.loginState = -2;
-                            }
-                        } else {
-                            messagesQueue.offer(message);
                         }
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
                     }
 
-            }
+                }
 
-            System.out.println (
-        
-    
-    "socket is closed");
+                System.out.println(
+                        "socket is closed");
             }
 
         };
         Thread thread = new Thread(run);
 
-    thread.start ();
-}
+        thread.start();
+    }
 
-private void handle() {
+    private void handle() {
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
-        public void run() {
+            public void run() {
                 while (!messagesQueue.isEmpty()) {
                     String message;
                     try {
@@ -254,12 +252,7 @@ private void handle() {
                         shootGame.setGuestBullet(guestBullet);
 
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(Communication
-
-.class  
-
-
-.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(Communication.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
                 }
