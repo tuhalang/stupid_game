@@ -191,7 +191,7 @@ public class ServiceHandler extends Thread {
             Game.getIntance().setRoom(room.getIdRoom(), room);
             userMsg += "0START GAME SUCCESSFULLY !";
         } else {
-            userMsg += "1START GAME FAILED. CAUSE YOU ARE NOT ADMIN !";
+            userMsg += "1START GAME FAILED !";
         }
         SocketUtil.sendViaTcp(player.getSocket(), userMsg);
     }
