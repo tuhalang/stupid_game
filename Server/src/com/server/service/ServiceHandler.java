@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  * @author tuhalang
  */
 public class ServiceHandler extends Thread {
-    
+
     private static final Logger LOGGER = Logger.getLogger(ServiceHandler.class);
 
     protected volatile BlockingQueue<Command> commandQueue;
@@ -84,7 +84,7 @@ public class ServiceHandler extends Thread {
                         actionRegister(player, message.substring(1));
                     } else if (message.startsWith(Config.JOIN_ROOM)) {
                         actionJoinRoom(player, message.substring(1));
-                    } else if (message.startsWith(Config.START_GAME)){
+                    } else if (message.startsWith(Config.START_GAME)) {
                         actionStartGame(player, message.substring(1));
                     }
                 } catch (InterruptedException | IOException ex) {
@@ -164,7 +164,9 @@ public class ServiceHandler extends Thread {
         if (player.isLogin()) {
             Game game = Game.getIntance();
             Room room = game.getRoom(idRoom);
-            player.setAdmin(true);
+            if (room.getNumOfMemmber() == 0) {
+                player.setAdmin(true);
+            }
             try {
                 room.setPlayer(player.getUsername(), player);
                 player.setCommandsQueue(room.getCommandsQueue());
@@ -173,7 +175,7 @@ public class ServiceHandler extends Thread {
                 SocketUtil.sendViaTcp(player.getSocket(), userMsg);
             } catch (Exception ex) {
                 userMsg = "1JOIN ROOM FAILED !";
-                LOGGER.error(ex,ex);
+                LOGGER.error(ex, ex);
             }
         } else {
             userMsg = "1JOIN ROOM FAILED !";
@@ -183,12 +185,12 @@ public class ServiceHandler extends Thread {
 
     private void actionStartGame(Player player, String idRoom) throws IOException {
         String userMsg = Config.START_GAME;
-        if(player.isAdmin()){
+        if (player.isAdmin()) {
             Room room = Game.getIntance().getRoom(idRoom);
             room.startGame();
             Game.getIntance().setRoom(room.getIdRoom(), room);
             userMsg += "0START GAME SUCCESSFULLY !";
-        }else{
+        } else {
             userMsg += "1START GAME FAILED. CAUSE YOU ARE NOT ADMIN !";
         }
         SocketUtil.sendViaTcp(player.getSocket(), userMsg);
