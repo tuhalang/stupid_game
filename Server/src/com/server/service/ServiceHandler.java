@@ -184,14 +184,14 @@ public class ServiceHandler extends Thread {
     }
 
     private void actionStartGame(Player player, String idRoom) throws IOException {
-        String userMsg = Config.START_GAME;
+        String userMsg;
         if (player.isAdmin()) {
             Room room = Game.getIntance().getRoom(idRoom);
             room.startGame();
             Game.getIntance().setRoom(room.getIdRoom(), room);
-            userMsg += "0START GAME SUCCESSFULLY !";
+            userMsg = "0START GAME SUCCESSFULLY !";
         } else {
-            userMsg += "1START GAME FAILED !";
+            userMsg = "1START GAME FAILED !";
         }
         SocketUtil.sendViaTcp(player.getSocket(), userMsg);
     }
