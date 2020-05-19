@@ -50,7 +50,6 @@ public class Room {
     private LinkedHashMap<Player, Bullet[]> bullets = new LinkedHashMap<>();
 
     public Room() {
-        this.idRoom = UUID.randomUUID().toString();
         players = new LinkedHashMap<>();
         commandsQueue = new ArrayBlockingQueue<>(MAX_QUEUE);
         this.status = true;
@@ -128,11 +127,6 @@ public class Room {
 
     public void startGame() {
         initGame();
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException ex) {
-            java.util.logging.Logger.getLogger(Room.class.getName()).log(Level.SEVERE, null, ex);
-        }
         this.start();
     }
 
