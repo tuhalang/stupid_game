@@ -5,6 +5,7 @@
  */
 package com.client.service;
 
+import com.client.ui.Config;
 import com.client.ui.ShootGame;
 import com.model.Airplane;
 import com.model.Bullet;
@@ -91,27 +92,33 @@ public final class Communication {
                         if (message != null) {
                             if (message.contains("LOGIN")) {
                                 if (message.startsWith("0")) {
-                                    shootGame.loginState = 3;
+                                    shootGame.loginState = Config.LOGIN_SUCCESS;
                                     System.out.println("Login Succesfull, now need to choose room");
-                                    shootGame.setRoomID(message.split("\\|")[1].split(","));
+                                    shootGame.setRoomIDs(message.split("\\|")[1].split(","));
                                 } else {
-                                    shootGame.loginState = 2;
+                                    shootGame.loginState = Config.LOGIN_FAIL;
                                     JOptionPane.showMessageDialog(null, "Login failed, please try again");
                                 }
                             } else if (message.contains("ROOM")) {
                                 if (message.startsWith("0")) {
-                                    shootGame.loginState = 1;
+                                    shootGame.loginState = Config.WAIT_PLAY;
                                     System.out.println("Join room successful");
                                 } else {
-                                    shootGame.loginState = 3;
                                     JOptionPane.showMessageDialog(null, "Join room failed, please try again");
+                                }
+                            } else if (message.contains("START")){
+                                if(message.startsWith("0")){
+                                    shootGame.loginState = Config.PLAY;
+                                    System.out.println("Let's play");
+                                } else{
+                                    JOptionPane.showMessageDialog(null, "You think you are admin?? Nooo");
                                 }
                             } else if (message.contains("REGISTER")) {
                                 if (message.startsWith("0")) {
-                                    shootGame.loginState = -1;
+                                    shootGame.loginState = Config.REGISTER_SUCCESS;
                                     System.out.println("Register Succesfull");
                                 } else {
-                                    shootGame.loginState = -2;
+                                    shootGame.loginState = Config.REGISTER_FAIL;
                                     JOptionPane.showMessageDialog(null, "Register failed, please try again");
                                 }
                             } else {

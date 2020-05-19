@@ -56,9 +56,10 @@ public class ShootGame extends JPanel {
 
     private static ShootGame game;
     private String username;
-    private static String[] roomID;
+    private static String[] roomIDs;
+    private static String playRoomID;
 
-    public static int loginState;  // 0 - start | 1 - login success | 2 - login failed | -1 - register success | -2 register failed
+    public static int loginState;
 
     static {
         try {
@@ -140,10 +141,12 @@ public class ShootGame extends JPanel {
                     case START:
 //                        state = RUNNING;
 //                        break;
+                        if(isJoinedRoom()){
+                            startGamePanel();
+                        }
                         if (isChooseRoom()) {
                             createJoinRoom();
-                        }
-                        else if (isPlaying()) {
+                        } else if (isPlaying()) {
                             state = RUNNING;
                         } else {
                             createLoginForm();
@@ -267,34 +270,46 @@ public class ShootGame extends JPanel {
         this.bullets = bullets;
     }
 
-    public static void setRoomID(String[] roomID) {
-        ShootGame.roomID = roomID;
+    public static void setRoomIDs(String[] roomIDs) {
+        ShootGame.roomIDs = roomIDs;
     }
 
+    private boolean isJoinedRoom(){
+        return (loginState == Config.WAIT_PLAY);
+    }
+    
     private boolean isChooseRoom() {
-        return (loginState == 3);
+        return (loginState == Config.LOGIN_SUCCESS);
     }
 
     private boolean isPlaying() {
-        return (loginState == 1);
+        return (loginState == Config.PLAY);
     }
 
-    public static void createJoinRoom() {
+    public void createJoinRoom() {
         // create JOptionPane to choose room
-        JComboBox jcRoom = new JComboBox(roomID);
-        jcRoom.setEditable(true);
-
-        Object[] options = new Object[]{};
-        JOptionPane jop = new JOptionPane("Please Select",
-                JOptionPane.QUESTION_MESSAGE,
-                JOptionPane.DEFAULT_OPTION,
-                null, options, null);
-
-        jop.add(jcRoom);
-        JDialog diag = new JDialog();
-        diag.getContentPane().add(jop);
-        diag.pack();
-        diag.setVisible(true);
+        
+        JComboBox<String> combo = new JComboBox<>(roomIDs);
+        String[] options = { "OK", "Cancel" };
+        String title = "Bắn nhau đuê";
+        int selection = JOptionPane.showOptionDialog(null, combo, title,
+        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+        if(selection == JOptionPane.YES_OPTION){
+            playRoomID = (String)combo.getSelectedItem();
+            communication.send("02"+ playRoomID);
+        } else {
+            JOptionPane.showMessageDialog(null, "Không chơi thì thôi");
+        }    
+    }
+    
+    public void startGamePanel(){
+        String[] options = {"Chiến thôi"};
+        int x = JOptionPane.showOptionDialog(null, "Chiến không em ơi",
+                "Bấm đi :)))",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        if(x == JOptionPane.YES_OPTION){
+            communication.send("03" + playRoomID);
+        }
     }
 
     public static void createLoginForm() {
