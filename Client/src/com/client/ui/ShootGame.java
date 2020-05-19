@@ -16,7 +16,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.LinkedHashMap;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -143,8 +142,7 @@ public class ShootGame extends JPanel {
 //                        break;
                         if(isJoinedRoom()){
                             startGamePanel();
-                        }
-                        if (isChooseRoom()) {
+                        }else if (isChooseRoom()) {
                             createJoinRoom();
                         } else if (isPlaying()) {
                             state = RUNNING;
