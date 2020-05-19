@@ -50,7 +50,6 @@ public class Room {
     private LinkedHashMap<Player, Bullet[]> bullets = new LinkedHashMap<>();
 
     public Room() {
-        this.idRoom = UUID.randomUUID().toString();
         players = new LinkedHashMap<>();
         commandsQueue = new ArrayBlockingQueue<>(MAX_QUEUE);
         this.status = true;

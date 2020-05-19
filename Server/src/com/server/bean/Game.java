@@ -24,6 +24,7 @@ public class Game {
         if(!Config.AUTO_ASSIGN_ROOM){
             for(int i=0; i<MAX_ROOM; i++){
                 Room room = new Room();
+                room.setIdRoom(String.valueOf(i+1));
                 rooms.put(room.getIdRoom(), room);
             }
         }
@@ -68,10 +69,10 @@ public class Game {
     }
     
     public synchronized String getListRoomEmpty(){
-        String result="|";
+        String result="";
         for(Room room : rooms.values()){
             if(!room.isFull()){
-                result+=room.getIdRoom()+"|";
+                result+=room.getIdRoom()+",";
             }
         }
         return result;

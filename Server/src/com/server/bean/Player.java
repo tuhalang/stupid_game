@@ -18,11 +18,14 @@ public class Player implements Serializable {
     private String username;
     private Boolean status;
     private Socket socket;
+    private boolean login;
+    private boolean admin;
     private BlockingQueue<Command> commandsQueue;
 
     public Player(Socket socket) {
         this.status = Boolean.TRUE;
         this.socket = socket;
+        this.admin = false;
     }
 
     public void pushCommand(String content) {
@@ -39,6 +42,15 @@ public class Player implements Serializable {
         this.commandsQueue = controlQueue;
     }
 
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    
     public String getUsername() {
         return username;
     }
@@ -62,5 +74,15 @@ public class Player implements Serializable {
     public void setSocket(Socket socket) {
         this.socket = socket;
     }
+
+    public boolean isLogin() {
+        return login;
+    }
+
+    public void setLogin(boolean login) {
+        this.login = login;
+    }
+    
+    
 
 }

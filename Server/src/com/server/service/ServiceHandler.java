@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package com.server.service;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -21,30 +22,37 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
+
 /**
  *
  * @author tuhalang
  */
 public class ServiceHandler extends Thread {
+    
+    private static final Logger LOGGER = Logger.getLogger(ServiceHandler.class);
+
     protected volatile BlockingQueue<Command> commandQueue;
     private static ServiceHandler serviceHandler;
     private volatile Boolean isRunning;
     private MongoDatasource datasource;
     private DB db;
     private static final Object MUTEX = new Object();
+
     private ServiceHandler() {
         commandQueue = new ArrayBlockingQueue<>(1024);
         isRunning = Boolean.TRUE;
         datasource = MongoDatasource.getIntance("mongodb://localhost:27017", "game");
         startService();
     }
+
     private void startService() {
         this.start();
     }
+
     static {
     }
+
     public static ServiceHandler getIntance() {
         ServiceHandler localRef = serviceHandler;
         if (localRef == null) {
@@ -57,9 +65,11 @@ public class ServiceHandler extends Thread {
         }
         return localRef;
     }
+
     public synchronized void pushCommand(Command command) {
         commandQueue.offer(command);
     }
+
     @Override
     public void run() {
         while (isRunning) {
@@ -72,15 +82,20 @@ public class ServiceHandler extends Thread {
                         actionLogin(player, message.substring(1));
                     } else if (message.startsWith(Config.REGISTER_CODE)) {
                         actionRegister(player, message.substring(1));
+                    } else if (message.startsWith(Config.JOIN_ROOM)) {
+                        actionJoinRoom(player, message.substring(1));
+                    } else if (message.startsWith(Config.START_GAME)){
+                        actionStartGame(player, message.substring(1));
                     }
                 } catch (InterruptedException | IOException ex) {
-                    // LOGGING
+                    LOGGER.error(ex, ex);
                 } catch (Exception ex) {
-                    Logger.getLogger(ServiceHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.error(ex, ex);
                 }
             }
         }
     }
+
     //msg = username|password
     private void actionLogin(Player player, String msg) throws IOException, Exception {
         String[] msgs = msg.split("\\|");
@@ -97,17 +112,12 @@ public class ServiceHandler extends Thread {
             if (cursor.hasNext()) {
                 // assign room
                 player.setUsername(username);
+                player.setLogin(true);
                 Game game = Game.getIntance();
                 Room room = game.getEmptyRoom();
-                room.setPlayer(username, player);
-                player.setCommandsQueue(room.getCommandsQueue());
-                game.setRoom(room.getIdRoom(), room);
-                System.out.println("AUTO ASSIGN ROOM " + room.getIdRoom());
-                if (room.getNumOfMemmber() == 1) {
-                    room.startGame();
-                }
+                String listRoom = game.getListRoomEmpty();
                 // response
-                String userMsg = "0LOGIN SUCCESSFULLY !";
+                String userMsg = "0LOGIN SUCCESSFULLY !|" + listRoom;
                 SocketUtil.sendViaTcp(socket, userMsg);
                 return;
             }
@@ -117,6 +127,7 @@ public class ServiceHandler extends Thread {
         String userMsg = "1LOGIN FAILED !";
         SocketUtil.sendViaTcp(socket, userMsg);
     }
+
     private void actionRegister(Player player, String msg) throws IOException {
         String[] msgs = msg.split("\\|");
         Socket socket = player.getSocket();
@@ -146,5 +157,40 @@ public class ServiceHandler extends Thread {
         // response faild cause duplicate username
         String userMsg = "1REGISTER FAILED !";
         SocketUtil.sendViaTcp(socket, userMsg);
+    }
+
+    private void actionJoinRoom(Player player, String idRoom) throws IOException {
+        String userMsg;
+        if (player.isLogin()) {
+            Game game = Game.getIntance();
+            Room room = game.getRoom(idRoom);
+            player.setAdmin(true);
+            try {
+                room.setPlayer(player.getUsername(), player);
+                player.setCommandsQueue(room.getCommandsQueue());
+                game.setRoom(room.getIdRoom(), room);
+                userMsg = "0JOIN ROOM SUCCESSFULLY !";
+                SocketUtil.sendViaTcp(player.getSocket(), userMsg);
+            } catch (Exception ex) {
+                userMsg = "1JOIN ROOM FAILED !";
+                LOGGER.error(ex,ex);
+            }
+        } else {
+            userMsg = "1JOIN ROOM FAILED !";
+        }
+        SocketUtil.sendViaTcp(player.getSocket(), userMsg);
+    }
+
+    private void actionStartGame(Player player, String idRoom) throws IOException {
+        String userMsg = Config.START_GAME;
+        if(player.isAdmin()){
+            Room room = Game.getIntance().getRoom(idRoom);
+            room.startGame();
+            Game.getIntance().setRoom(room.getIdRoom(), room);
+            userMsg += "0START GAME SUCCESSFULLY !";
+        }else{
+            userMsg += "1START GAME FAILED. CAUSE YOU ARE NOT ADMIN !";
+        }
+        SocketUtil.sendViaTcp(player.getSocket(), userMsg);
     }
 }

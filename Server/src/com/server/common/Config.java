@@ -13,15 +13,14 @@ public class Config {
     public static final String ACCESS_CODE = "0";
     public static final String LOGIN_CODE = "0";
     public static final String REGISTER_CODE = "1";
-    
+    public static final String JOIN_ROOM = "2";
+    public static final String START_GAME = "3";
     
     
     public static final String CONTROL_CODE = "1";
-    public static final String START_ROOM_CODE = "0";
-    public static final String START_GAME_CODE = "1";
     public static final String MOVE_CODE = "2";
     
-    public static final Boolean AUTO_ASSIGN_ROOM = Boolean.TRUE;
+    public static final Boolean AUTO_ASSIGN_ROOM = Boolean.FALSE;
     public static final int MAX_POOL = 30;
     public static final int FREQ_GEN_FLY = 50;
     
