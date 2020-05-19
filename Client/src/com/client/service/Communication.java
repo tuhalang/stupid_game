@@ -6,7 +6,6 @@
 package com.client.service;
 
 import com.client.ui.ShootGame;
-import static com.client.ui.ShootGame.loginState;
 import com.model.Airplane;
 import com.model.Bullet;
 import com.model.FlyingObject;
@@ -20,7 +19,6 @@ import java.net.Socket;
 import java.util.LinkedHashMap;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
@@ -93,11 +91,20 @@ public final class Communication {
                         if (message != null) {
                             if (message.contains("LOGIN")) {
                                 if (message.startsWith("0")) {
-                                    shootGame.loginState = 1;
-                                    System.out.println("Login Succesfull");
+                                    shootGame.loginState = 3;
+                                    System.out.println("Login Succesfull, now need to choose room");
+                                    shootGame.setRoomID(message.split("\\|")[1].split(","));
                                 } else {
                                     shootGame.loginState = 2;
-                                    JOptionPane.showMessageDialog(null, "Login fail, please try again");
+                                    JOptionPane.showMessageDialog(null, "Login failed, please try again");
+                                }
+                            } else if (message.contains("ROOM")) {
+                                if (message.startsWith("0")) {
+                                    shootGame.loginState = 1;
+                                    System.out.println("Join room successful");
+                                } else {
+                                    shootGame.loginState = 3;
+                                    JOptionPane.showMessageDialog(null, "Join room failed, please try again");
                                 }
                             } else if (message.contains("REGISTER")) {
                                 if (message.startsWith("0")) {
@@ -105,7 +112,7 @@ public final class Communication {
                                     System.out.println("Register Succesfull");
                                 } else {
                                     shootGame.loginState = -2;
-                                    JOptionPane.showMessageDialog(null, "Register fail, please try again");
+                                    JOptionPane.showMessageDialog(null, "Register failed, please try again");
                                 }
                             } else {
                                 messagesQueue.offer(message);

@@ -140,7 +140,7 @@ public class ServiceHandler extends Thread {
             DBObject userObj = new BasicDBObject(user);
             collection.insert(userObj);
             // response success
-            String userMsg = "0REGISTER SUCCESSFULLY ! PLEASE LOGIN !";
+            String userMsg = "0REGISTER SUCCESSFULLY !";
             SocketUtil.sendViaTcp(socket, userMsg);
         }
         // response faild cause duplicate username

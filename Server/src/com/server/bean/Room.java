@@ -128,11 +128,6 @@ public class Room {
 
     public void startGame() {
         initGame();
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException ex) {
-            java.util.logging.Logger.getLogger(Room.class.getName()).log(Level.SEVERE, null, ex);
-        }
         this.start();
     }
 

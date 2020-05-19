@@ -15,8 +15,8 @@ import java.awt.event.MouseEvent;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.LinkedHashMap;
-import javax.swing.Box;
-import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -44,8 +44,6 @@ public class ShootGame extends JPanel {
     public static BufferedImage hero1;
 
     private static JFrame frame;
-    private static JPanel loginPanel;
-    private static LoginForm login;
     private static JPanel mainPanel;
 
     private final Communication communication;
@@ -58,15 +56,16 @@ public class ShootGame extends JPanel {
 
     private static ShootGame game;
     private String username;
+    private static String[] roomID;
 
     public static int loginState;  // 0 - start | 1 - login success | 2 - login failed | -1 - register success | -2 register failed
 
     static {
         try {
-            background = ImageIO.read(ShootGame.class.getResource("background.png"));
-            start = ImageIO.read(ShootGame.class.getResource("start.png"));
-            pause = ImageIO.read(ShootGame.class.getResource("pause.png"));
-            gameover = ImageIO.read(ShootGame.class.getResource("gameover.png"));
+            background = ImageIO.read(ShootGame.class.getResource("/image/background.png"));
+            start = ImageIO.read(ShootGame.class.getResource("/image/start.png"));
+            pause = ImageIO.read(ShootGame.class.getResource("/image/pause.png"));
+            gameover = ImageIO.read(ShootGame.class.getResource("/image/gameover.png"));
             //airplane = ImageIO.read(ShootGame.class.getResource("airplane.png"));
             //bee = ImageIO.read(ShootGame.class.getResource("bee.png"));
             //bullet = ImageIO.read(ShootGame.class.getResource("bullet.png"));
@@ -141,7 +140,10 @@ public class ShootGame extends JPanel {
                     case START:
 //                        state = RUNNING;
 //                        break;
-                        if (isLogin()) {
+                        if (isChooseRoom()) {
+                            createJoinRoom();
+                        }
+                        else if (isPlaying()) {
                             state = RUNNING;
                         } else {
                             createLoginForm();
@@ -265,11 +267,38 @@ public class ShootGame extends JPanel {
         this.bullets = bullets;
     }
 
-    private boolean isLogin() {
+    public static void setRoomID(String[] roomID) {
+        ShootGame.roomID = roomID;
+    }
+
+    private boolean isChooseRoom() {
+        return (loginState == 3);
+    }
+
+    private boolean isPlaying() {
         return (loginState == 1);
     }
 
+    public static void createJoinRoom() {
+        // create JOptionPane to choose room
+        JComboBox jcRoom = new JComboBox(roomID);
+        jcRoom.setEditable(true);
+
+        Object[] options = new Object[]{};
+        JOptionPane jop = new JOptionPane("Please Select",
+                JOptionPane.QUESTION_MESSAGE,
+                JOptionPane.DEFAULT_OPTION,
+                null, options, null);
+
+        jop.add(jcRoom);
+        JDialog diag = new JDialog();
+        diag.getContentPane().add(jop);
+        diag.pack();
+        diag.setVisible(true);
+    }
+
     public static void createLoginForm() {
+        // create JOptionPane to Login or Register
         JTextField username = new JTextField();
         JTextField password = new JPasswordField();
         Object[] message = {
@@ -311,7 +340,7 @@ public class ShootGame extends JPanel {
                     System.out.println(mess);
                     game.communication.send(mess);
                 }
-            }else {
+            } else {
                 JOptionPane.showMessageDialog(null, "Two field must be filled");
             }
             System.out.println("Login canceled");
@@ -322,9 +351,7 @@ public class ShootGame extends JPanel {
         frame = new JFrame("Fly");
 
         game = new ShootGame();
-//        mainPanel = new JPanel();
         frame.add(game);
-//        login = new LoginForm(game.communication);
 
         frame.setSize(WIDTH, HEIGHT);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -335,18 +362,5 @@ public class ShootGame extends JPanel {
         game.action();
 
         createLoginForm();
-    }
-
-    public void loginStartGame() {
-        game = new ShootGame();
-        mainPanel.remove(login);
-        mainPanel.add(game);
-        mainPanel.setSize(WIDTH, HEIGHT);
-        frame.setSize(WIDTH, HEIGHT);
-        frame.setAlwaysOnTop(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        game.action();
     }
 }
