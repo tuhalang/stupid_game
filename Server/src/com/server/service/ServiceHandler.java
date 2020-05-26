@@ -180,7 +180,7 @@ public class ServiceHandler extends Thread {
             userMsg = "1JOIN ROOM FAILED !";
             SocketUtil.sendViaTcp(player.getSocket(), Config.JOIN_ROOM_FAILED);
         }
-        
+
     }
 
     private void actionStartGame(Player player, String idRoom) throws IOException {
@@ -190,7 +190,9 @@ public class ServiceHandler extends Thread {
             room.startGame();
             Game.getIntance().setRoom(room.getIdRoom(), room);
             userMsg = "0START GAME SUCCESSFULLY !";
-            SocketUtil.sendViaTcp(player.getSocket(), Config.START_GAME_SUCCESS);
+            for (Player player1 : room.getPlayers().values()) {
+                SocketUtil.sendViaTcp(player1.getSocket(), Config.START_GAME_SUCCESS);
+            }
         } else {
             userMsg = "1START GAME FAILED !";
             SocketUtil.sendViaTcp(player.getSocket(), Config.START_GAME_FAILED);

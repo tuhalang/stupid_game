@@ -103,6 +103,16 @@ public class Room {
     public synchronized void setStatus(Boolean status) {
         this.status = status;
     }
+
+    public LinkedHashMap<String, Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(LinkedHashMap<String, Player> players) {
+        this.players = players;
+    }
+    
+    
     
     private void initGame(){
         flyings = new FlyingObject[0];
@@ -327,7 +337,7 @@ public class Room {
                                 stepAction(p);
                                 bangAction(p);
                                 outOfBoundsAction(p);
-                                //isGameOver(p);
+                                isGameOver(p);
                             }
                         }
                         String state = getStateGame();

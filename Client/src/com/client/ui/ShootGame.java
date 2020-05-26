@@ -77,7 +77,7 @@ public class ShootGame extends JPanel {
     }
 
     public ShootGame() {
-        communication = Communication.getIntance("127.0.0.1", 8888, this);
+        communication = Communication.getIntance("169.254.200.91", 8888, this);
         loginState = 0;
     }
 
