@@ -155,21 +155,22 @@ public class ShootGame extends JPanel {
                         flyings = new FlyingObject[0];
                         bullets = new Bullet[0];
                         state = START;
+                        loginState = Config.LOGIN_SUCCESS;
                         break;
                 }
             }
 
-            public void mouseExited(MouseEvent e) {
-                if (state == RUNNING) {
-                    //state = PAUSE;   
-                }
-            }
+//            public void mouseExited(MouseEvent e) {
+//                if (state == RUNNING) {
+//                    state = PAUSE;   
+//                }
+//            }
 
-            public void mouseEntered(MouseEvent e) {
-                if (state == PAUSE) {
-                    state = RUNNING;
-                }
-            }
+//            public void mouseEntered(MouseEvent e) {
+//                if (state == PAUSE) {
+//                    state = RUNNING;
+//                }
+//            }
         };
         this.addMouseListener(l);
         this.addMouseMotionListener(l);
@@ -179,7 +180,7 @@ public class ShootGame extends JPanel {
             public void run() {
                 if (state == RUNNING) {
                     shootAction();
-                    //checkGameOverAction();
+                    checkGameOverAction();
                     String state = getStateGame();
                     communication.send("1" + state);
                 }

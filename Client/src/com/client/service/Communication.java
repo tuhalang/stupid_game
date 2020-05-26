@@ -121,6 +121,27 @@ public final class Communication {
                                     shootGame.loginState = Config.REGISTER_FAIL;
                                     JOptionPane.showMessageDialog(null, "Register failed, please try again");
                                     break;
+                                case Config.RES_FINISH_GAME:
+                                    message = message.substring(3);
+                                    String[] result = message.split("\\");
+                                    int numOfPlayer = result.length;
+//                                    String[] allUserName = new String[numOfPlayer];
+//                                    String[] allScore = new String[numOfPlayer];
+//                                    String[] deadOrAlive = new String[numOfPlayer];
+                                    String mess = "";
+                                    for(int i = 0; i < numOfPlayer; i++){
+                                        String[] info = result[i].split(",");
+//                                        allUserName[i] = info[0];
+//                                        allScore[i] = info[1];
+//                                        deadOrAlive[i] = info[2];
+                                        mess += i + 1 + ". " + info[0] + ": " + info[1];
+                                        if(info[2].equals("0")){
+                                            mess += "Bố m đang sống";
+                                        }
+                                        mess += "\n";
+                                    }
+                                    JOptionPane.showMessageDialog(null, mess);
+                                    break;
                                 default:
                                     messagesQueue.offer(message);
                             }
