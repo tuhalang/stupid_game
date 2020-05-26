@@ -123,7 +123,7 @@ public final class Communication {
                                     break;
                                 case Config.RES_FINISH_GAME:
                                     message = message.substring(3);
-                                    String[] result = message.split("\\");
+                                    String[] result = message.split("\\|");
                                     int numOfPlayer = result.length;
 //                                    String[] allUserName = new String[numOfPlayer];
 //                                    String[] allScore = new String[numOfPlayer];
