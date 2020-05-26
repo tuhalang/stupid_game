@@ -76,8 +76,8 @@ public class ShootGame extends JPanel {
         }
     }
 
-    public ShootGame() {
-        communication = Communication.getIntance("169.254.200.91", 8888, this);
+    public ShootGame() {//169.254.200.91
+        communication = Communication.getIntance("127.0.0.1", 8888, this);
         loginState = 0;
     }
 
@@ -155,6 +155,7 @@ public class ShootGame extends JPanel {
                         flyings = new FlyingObject[0];
                         bullets = new Bullet[0];
                         state = START;
+                        loginState = Config.LOGIN_SUCCESS;
                         break;
                 }
             }
@@ -179,7 +180,7 @@ public class ShootGame extends JPanel {
             public void run() {
                 if (state == RUNNING) {
                     shootAction();
-                    //checkGameOverAction();
+                    checkGameOverAction();
                     String state = getStateGame();
                     communication.send("1" + state);
                 }

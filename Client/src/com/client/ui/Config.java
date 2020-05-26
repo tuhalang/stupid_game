@@ -28,4 +28,5 @@ public class Config {
     public static final String RES_JOIN_ROOM_FAILED = "021";
     public static final String RES_START_GAME_SUCCESS = "030";
     public static final String RES_START_GAME_FAILED = "031";
+    //050username,
 }

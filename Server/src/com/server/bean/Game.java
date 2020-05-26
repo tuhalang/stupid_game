@@ -52,7 +52,9 @@ public class Game {
     }
     
     public synchronized void removeRoom(String idRoom){
-        rooms.remove(idRoom);
+        Room room = new Room();
+        room.setIdRoom(idRoom);
+        rooms.put(idRoom, room);
     }
     
     public synchronized Room getEmptyRoom(){
