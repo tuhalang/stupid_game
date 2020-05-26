@@ -34,7 +34,6 @@ public final class Communication {
 
     private volatile Socket socket;
     private volatile BlockingQueue<String> messagesQueue;
-    private String username;
     private ShootGame shootGame;
 
     private static volatile Communication communication;
@@ -45,7 +44,6 @@ public final class Communication {
             this.socket = new Socket(ip, port);
             this.messagesQueue = new ArrayBlockingQueue<>(10240);
             this.shootGame = shootGame;
-            this.username = "phamhung";
             receive();
             handle();
         } catch (IOException ex) {
@@ -90,39 +88,41 @@ public final class Communication {
                         String message = br.readLine();
                         System.out.println(message);
                         if (message != null) {
-                            if (message.contains("LOGIN")) {
-                                if (message.startsWith("0")) {
+                            String code = message.substring(0, 3);
+                            switch (code) {
+                                case Config.RES_LOGIN_SUCCESS:
                                     shootGame.loginState = Config.LOGIN_SUCCESS;
                                     System.out.println("Login Succesfull, now need to choose room");
                                     shootGame.setRoomIDs(message.split("\\|")[1].split(","));
-                                } else {
+                                    break;
+                                case Config.RES_LOGIN_FAILED:
                                     shootGame.loginState = Config.LOGIN_FAIL;
-                                    JOptionPane.showMessageDialog(null, "Login failed, please try again");
-                                }
-                            } else if (message.contains("ROOM")) {
-                                if (message.startsWith("0")) {
+                                        JOptionPane.showMessageDialog(null, "Login failed, please try again");
+                                    break;
+                                case Config.RES_JOIN_ROOM_SUCCESS:
                                     shootGame.loginState = Config.WAIT_PLAY;
-                                    System.out.println("Join room successful");
-                                } else {
+                                        System.out.println("Join room successful");
+                                    break;
+                                case Config.RES_JOIN_ROOM_FAILED:
                                     JOptionPane.showMessageDialog(null, "Join room failed, please try again");
-                                }
-                            } else if (message.contains("START")){
-                                if(message.startsWith("0")){
+                                    break;
+                                case Config.RES_START_GAME_SUCCESS:
                                     shootGame.loginState = Config.PLAY;
-                                    System.out.println("Let's play");
-                                } else{
+                                        System.out.println("Let's play");
+                                    break;
+                                case Config.RES_START_GAME_FAILED:
                                     JOptionPane.showMessageDialog(null, "You think you are admin?? Nooo");
-                                }
-                            } else if (message.contains("REGISTER")) {
-                                if (message.startsWith("0")) {
+                                    break;
+                                case Config.RES_REGISTER_SUCCESS:
                                     shootGame.loginState = Config.REGISTER_SUCCESS;
-                                    System.out.println("Register Succesfull");
-                                } else {
+                                        System.out.println("Register Succesfull");
+                                    break;
+                                case Config.RES_REGISTER_FAILED:
                                     shootGame.loginState = Config.REGISTER_FAIL;
                                     JOptionPane.showMessageDialog(null, "Register failed, please try again");
-                                }
-                            } else {
-                                messagesQueue.offer(message);
+                                    break;
+                                default:
+                                    messagesQueue.offer(message);
                             }
                         }
                     } catch (IOException e) {
@@ -176,7 +176,7 @@ public final class Communication {
                         LinkedHashMap<Hero, Bullet[]> guestBullet = new LinkedHashMap<>();
                         for (int i = 1; i < items.length;) {
                             // get the state of the different users
-                            if (username.equals(items[i])) {
+                            if (ShootGame.username.equals(items[i])) {
                                 String uname = null;
                                 String[] posStr = null;
                                 String scoreStr = null;

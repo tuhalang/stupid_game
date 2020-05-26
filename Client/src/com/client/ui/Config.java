@@ -19,4 +19,13 @@ public class Config {
     // after login
     public static final int WAIT_PLAY = 4;
     public static final int PLAY = 5;
+    
+    public static final String RES_LOGIN_SUCCESS = "000";
+    public static final String RES_LOGIN_FAILED = "001";
+    public static final String RES_REGISTER_SUCCESS = "010";
+    public static final String RES_REGISTER_FAILED = "011";
+    public static final String RES_JOIN_ROOM_SUCCESS = "020";
+    public static final String RES_JOIN_ROOM_FAILED = "021";
+    public static final String RES_START_GAME_SUCCESS = "030";
+    public static final String RES_START_GAME_FAILED = "031";
 }

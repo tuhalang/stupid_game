@@ -117,15 +117,13 @@ public class ServiceHandler extends Thread {
                 Room room = game.getEmptyRoom();
                 String listRoom = game.getListRoomEmpty();
                 // response
-                String userMsg = "0LOGIN SUCCESSFULLY !|" + listRoom;
+                String userMsg = Config.LOGIN_SUCCESS + "|" + listRoom;
                 SocketUtil.sendViaTcp(socket, userMsg);
                 return;
             }
-            String userMsg = "1LOGIN FAILED !";
-            SocketUtil.sendViaTcp(socket, userMsg);
+            SocketUtil.sendViaTcp(socket, Config.LOGIN_FAILED);
         }
-        String userMsg = "1LOGIN FAILED !";
-        SocketUtil.sendViaTcp(socket, userMsg);
+        SocketUtil.sendViaTcp(socket, Config.LOGIN_FAILED);
     }
 
     private void actionRegister(Player player, String msg) throws IOException {
@@ -141,7 +139,7 @@ public class ServiceHandler extends Thread {
             if (cursor.hasNext()) {
                 // response faild cause duplicate username
                 String userMsg = "1REGISTER FAILED !";
-                SocketUtil.sendViaTcp(socket, userMsg);
+                SocketUtil.sendViaTcp(socket, Config.REGISTER_FAILED);
                 return;
             }
             // success
@@ -152,11 +150,11 @@ public class ServiceHandler extends Thread {
             collection.insert(userObj);
             // response success
             String userMsg = "0REGISTER SUCCESSFULLY !";
-            SocketUtil.sendViaTcp(socket, userMsg);
+            SocketUtil.sendViaTcp(socket, Config.REGISTER_SUCCESS);
         }
         // response faild cause duplicate username
         String userMsg = "1REGISTER FAILED !";
-        SocketUtil.sendViaTcp(socket, userMsg);
+        SocketUtil.sendViaTcp(socket, Config.REGISTER_FAILED);
     }
 
     private void actionJoinRoom(Player player, String idRoom) throws IOException {
@@ -172,15 +170,17 @@ public class ServiceHandler extends Thread {
                 player.setCommandsQueue(room.getCommandsQueue());
                 game.setRoom(room.getIdRoom(), room);
                 userMsg = "0JOIN ROOM SUCCESSFULLY !";
-                SocketUtil.sendViaTcp(player.getSocket(), userMsg);
+                SocketUtil.sendViaTcp(player.getSocket(), Config.JOIN_ROOM_SUCCESS);
             } catch (Exception ex) {
                 userMsg = "1JOIN ROOM FAILED !";
                 LOGGER.error(ex, ex);
+                SocketUtil.sendViaTcp(player.getSocket(), Config.JOIN_ROOM_FAILED);
             }
         } else {
             userMsg = "1JOIN ROOM FAILED !";
+            SocketUtil.sendViaTcp(player.getSocket(), Config.JOIN_ROOM_FAILED);
         }
-        SocketUtil.sendViaTcp(player.getSocket(), userMsg);
+        
     }
 
     private void actionStartGame(Player player, String idRoom) throws IOException {
@@ -190,9 +190,10 @@ public class ServiceHandler extends Thread {
             room.startGame();
             Game.getIntance().setRoom(room.getIdRoom(), room);
             userMsg = "0START GAME SUCCESSFULLY !";
+            SocketUtil.sendViaTcp(player.getSocket(), Config.START_GAME_SUCCESS);
         } else {
             userMsg = "1START GAME FAILED !";
+            SocketUtil.sendViaTcp(player.getSocket(), Config.START_GAME_FAILED);
         }
-        SocketUtil.sendViaTcp(player.getSocket(), userMsg);
     }
 }

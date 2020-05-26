@@ -54,7 +54,7 @@ public class ShootGame extends JPanel {
     private Bullet[] bullets = {};
 
     private static ShootGame game;
-    private String username;
+    public static String username;
     private static String[] roomIDs;
     private static String playRoomID;
 
@@ -329,6 +329,7 @@ public class ShootGame extends JPanel {
         if (option == JOptionPane.YES_OPTION) {
             // handle if click LOGIN
             String uname = username.getText();
+            ShootGame.username = uname;
             String pwd = password.getText();
             if (uname != "" && pwd != "") {
                 String mess = "";

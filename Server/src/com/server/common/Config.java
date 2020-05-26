@@ -17,6 +17,16 @@ public class Config {
     public static final String START_GAME = "3";
     
     
+    public static final String LOGIN_SUCCESS = "000";
+    public static final String LOGIN_FAILED = "001";
+    public static final String REGISTER_SUCCESS = "010";
+    public static final String REGISTER_FAILED = "011";
+    public static final String JOIN_ROOM_SUCCESS = "020";
+    public static final String JOIN_ROOM_FAILED = "021";
+    public static final String START_GAME_SUCCESS = "030";
+    public static final String START_GAME_FAILED = "031";
+    
+    
     public static final String CONTROL_CODE = "1";
     public static final String MOVE_CODE = "2";
     

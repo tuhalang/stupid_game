@@ -238,6 +238,16 @@ public class Room {
         bullets = Arrays.copyOf(bulletLives, index);
         this.bullets.put(player, bullets);
     }
+    
+    private void isOver(){
+        for(Player player : players.values()){
+            if(player.getStatus()){
+                return;
+            }
+        }
+        status = false;
+        return;
+    }
 
     public void isGameOver(Player player) {
         Hero hero = this.heros.get(player);
@@ -266,10 +276,12 @@ public class Room {
 
     public void start() {
         Timer timer = new Timer();
+        
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 if (status) {
+                    isOver();
                     int batchSize = 1;
                     if (getNumOfMemmber() > 1) {
                         batchSize = getNumOfMemmber();
@@ -278,13 +290,12 @@ public class Room {
                         int index = 1;
                         while (!commandsQueue.isEmpty() && index != 0) {
                             index++;
-                            System.out.println("INDEX: " + index);
                             index = index % batchSize;
                             Command command = commandsQueue.take();
                             Player player = command.getPlayer();
                             String message = command.getMessaage();
 
-                            System.out.println(message);
+                            System.out.println("RECIEVE:" + message);
 
                             String[] items = message.split("\\|");
                             if (items.length > 0) {
@@ -316,10 +327,11 @@ public class Room {
                                 stepAction(p);
                                 bangAction(p);
                                 outOfBoundsAction(p);
-                                isGameOver(p);
+                                //isGameOver(p);
                             }
                         }
                         String state = getStateGame();
+                        System.out.println("SEND: "+ state);
                         sendStateGame(state);
                     } catch (InterruptedException ex) {
                         LOGGER.error(ex);
