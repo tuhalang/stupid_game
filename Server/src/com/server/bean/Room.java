@@ -13,6 +13,7 @@ import com.model.Enemy;
 import com.model.FlyingObject;
 import com.model.Hero;
 import com.server.common.Config;
+import com.server.common.SocketUtil;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -118,8 +119,10 @@ public class Room {
         flyings = new FlyingObject[0];
         
         for(Player player : players.values()){
+            player.setStatus(true);
             heros.put(player, new Hero(0, 0));
             bullets.put(player, new Bullet[0]);
+            
         }
     }
     
@@ -253,9 +256,31 @@ public class Room {
         for(Player player : players.values()){
             if(player.getStatus()){
                 return;
+            }else{
+                String msg = "040";
+                for(Player p : players.values()){
+                    msg += p.getUsername()+",";
+                    msg += heros.get(p).getScore()+",";
+                    msg += p.getStatus()?"0":"1";
+                    msg += "|";
+                }
+                System.out.println("MESSAGE FINISH: " + msg);
+                try {
+                    SocketUtil.sendViaTcp(player.getSocket(), msg);
+                } catch (IOException ex) {
+                    LOGGER.error(ex);
+                }
             }
         }
         status = false;
+        System.out.println("ROOM"+ idRoom +" STOP !");
+        Game game = Game.getIntance();
+        game.removeRoom(idRoom);
+        
+        for(Player player : players.values()){
+            player.setStatus(true);
+        }
+        
         return;
     }
 
@@ -290,6 +315,7 @@ public class Room {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
+                System.out.println("ROOM"+ idRoom +" IS RUNNING !");
                 if (status) {
                     isOver();
                     int batchSize = 1;
@@ -346,6 +372,9 @@ public class Room {
                     } catch (InterruptedException ex) {
                         LOGGER.error(ex);
                     }
+                }else{
+                    timer.cancel();
+                    timer.purge();
                 }
             }
 
