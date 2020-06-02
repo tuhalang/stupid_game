@@ -24,6 +24,7 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
@@ -185,11 +186,24 @@ public class Room {
         Bullet[] bullets = this.bullets.get(player);
         Hero hero = this.heros.get(player);
         int score = hero.getScore();
-        for (Bullet bullet : bullets) {
-            score = bang(bullet, hero, score);
+        int newScore;
+        Vector<Integer> markBullet = new Vector<Integer>();
+        int length = bullets.length;
+        for (int i = 0; i < length; i++){ 
+            newScore = bang(bullets[i], hero, score);
+            if(newScore == score){
+                markBullet.add(i);
+            }
+            score = newScore;
+        }
+        
+        length = markBullet.size();
+        Bullet[] updateBullet = new Bullet[length];
+        for(int i = 0; i < length; i++){
+            updateBullet[i] = bullets[markBullet.get(i)];
         }
         hero.setScore(score);
-        this.bullets.put(player, bullets);
+        this.bullets.put(player, updateBullet);
         this.heros.put(player, hero);
     }
 
@@ -386,7 +400,7 @@ public class Room {
                 }
             }
 
-        }, 15, 15);
+        }, 50, 20);
 
     }
 

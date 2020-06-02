@@ -91,7 +91,7 @@ public class ShootGame extends JPanel {
 
     public void shootAction() {
         shootIndex++;
-        if ((shootIndex %= 10) == 0) {
+        if ((shootIndex %= 5) == 0) {
             Bullet[] bs = hero.shoot();
             bullets = Arrays.copyOf(bullets, bullets.length + bs.length);
             System.arraycopy(bs, 0, bullets, bullets.length - bs.length, bs.length);
@@ -123,7 +123,7 @@ public class ShootGame extends JPanel {
     }
 
     private Timer timer;
-    private int intervel = 50;
+    private int intervel = 100;
 
     public void action() {
         MouseAdapter l = new MouseAdapter() {
