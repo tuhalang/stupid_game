@@ -276,6 +276,8 @@ public class Room {
         }
         if (_isOver) {
             status = false;
+            isRunning = false;
+            
             System.out.println("ROOM" + idRoom + " STOP !");
             Game game = Game.getIntance();
             game.removeRoom(idRoom);
@@ -314,6 +316,8 @@ public class Room {
     }
 
     public void start() {
+        isRunning = true;
+        
         Timer timer = new Timer();
 
         timer.schedule(new TimerTask() {
