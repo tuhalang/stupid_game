@@ -162,10 +162,18 @@ public class ServiceHandler extends Thread {
         if (player.isLogin()) {
             Game game = Game.getIntance();
             Room room = game.getRoom(idRoom);
+
+            if (room.getIsRunning()) {
+                userMsg = "1JOIN ROOM FAILED !";
+                SocketUtil.sendViaTcp(player.getSocket(), Config.JOIN_ROOM_FAILED);
+                return;
+            }
+
             if (room.getNumOfMemmber() == 0) {
                 player.setAdmin(true);
             }
             try {
+                player.setStatus(Boolean.TRUE);
                 room.setPlayer(player.getUsername(), player);
                 player.setCommandsQueue(room.getCommandsQueue());
                 game.setRoom(room.getIdRoom(), room);

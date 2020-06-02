@@ -112,27 +112,27 @@ public class Room {
     public void setPlayers(LinkedHashMap<String, Player> players) {
         this.players = players;
     }
-    
-    
-    
-    private void initGame(){
+
+    private void initGame() {
         flyings = new FlyingObject[0];
-        
-        for(Player player : players.values()){
+
+        for (Player player : players.values()) {
             player.setStatus(true);
             heros.put(player, new Hero(0, 0));
             bullets.put(player, new Bullet[0]);
-            
+
         }
     }
-    
-    private boolean checkFinishGame(){
-        for(Player player : players.values()){
-            if(player.getStatus()) return false;
+
+    private boolean checkFinishGame() {
+        for (Player player : players.values()) {
+            if (player.getStatus()) {
+                return false;
+            }
         }
         // SAVE DATABASE
         // TODO
-        
+
         isRunning = false;
         initGame();
         return true;
@@ -251,36 +251,37 @@ public class Room {
         bullets = Arrays.copyOf(bulletLives, index);
         this.bullets.put(player, bullets);
     }
-    
-    private void isOver(){
-        for(Player player : players.values()){
-            if(player.getStatus()){
+
+    private void isOver() {
+        for (Player player : players.values()) {
+            if (player.getStatus()) {
                 return;
-            }else{
+            } else {
                 String msg = "040";
-                for(Player p : players.values()){
-                    msg += p.getUsername()+",";
-                    msg += heros.get(p).getScore()+",";
-                    msg += p.getStatus()?"0":"1";
+                for (Player p : players.values()) {
+                    msg += p.getUsername() + ",";
+                    msg += heros.get(p).getScore() + ",";
+                    msg += p.getStatus() ? "0" : "1";
                     msg += "|";
                 }
                 System.out.println("MESSAGE FINISH: " + msg);
                 try {
                     SocketUtil.sendViaTcp(player.getSocket(), msg);
+                    removePlayer(player.getUsername());
                 } catch (IOException ex) {
                     LOGGER.error(ex);
                 }
             }
         }
         status = false;
-        System.out.println("ROOM"+ idRoom +" STOP !");
+        System.out.println("ROOM" + idRoom + " STOP !");
         Game game = Game.getIntance();
         game.removeRoom(idRoom);
-        
-        for(Player player : players.values()){
+
+        for (Player player : players.values()) {
             player.setStatus(true);
         }
-        
+
         return;
     }
 
@@ -311,11 +312,11 @@ public class Room {
 
     public void start() {
         Timer timer = new Timer();
-        
+
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                System.out.println("ROOM"+ idRoom +" IS RUNNING !");
+                System.out.println("ROOM" + idRoom + " IS RUNNING !");
                 if (status) {
                     isOver();
                     int batchSize = 1;
@@ -367,12 +368,12 @@ public class Room {
                             }
                         }
                         String state = getStateGame();
-                        System.out.println("SEND: "+ state);
+                        System.out.println("SEND: " + state);
                         sendStateGame(state);
                     } catch (InterruptedException ex) {
                         LOGGER.error(ex);
                     }
-                }else{
+                } else {
                     timer.cancel();
                     timer.purge();
                 }
@@ -435,6 +436,11 @@ public class Room {
                     bw.flush();
                 } catch (IOException ex) {
                     player.setStatus(Boolean.FALSE);
+                    try {
+                        removePlayer(player.getUsername());
+                    } catch (Exception e) {
+                        LOGGER.error(e);
+                    }
                     LOGGER.error(ex);
                 }
             }
