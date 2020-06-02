@@ -20,6 +20,7 @@ public class Config {
     public static final int WAIT_PLAY = 4;
     public static final int PLAY = 5;
     
+    // response code
     public static final String RES_LOGIN_SUCCESS = "000";
     public static final String RES_LOGIN_FAILED = "001";
     public static final String RES_REGISTER_SUCCESS = "010";
@@ -29,4 +30,5 @@ public class Config {
     public static final String RES_START_GAME_SUCCESS = "030";
     public static final String RES_START_GAME_FAILED = "031";
     public static final String RES_FINISH_GAME = "040";
+    
 }
