@@ -111,7 +111,7 @@ public final class Communication {
                                         System.out.println("Let's play");
                                     break;
                                 case Config.RES_START_GAME_FAILED:
-                                    JOptionPane.showMessageDialog(null, "You think you are admin?? Nooo");
+                                    JOptionPane.showMessageDialog(null, "You are not admin");
                                     break;
                                 case Config.RES_REGISTER_SUCCESS:
                                     shootGame.loginState = Config.REGISTER_SUCCESS;
@@ -136,7 +136,7 @@ public final class Communication {
 //                                        deadOrAlive[i] = info[2];
                                         mess += i + 1 + ". " + info[0] + ": " + info[1];
                                         if(info[2].equals("0")){
-                                            mess += "Bố m đang sống";
+                                            mess += "is alive";
                                         }
                                         mess += "\n";
                                     }
