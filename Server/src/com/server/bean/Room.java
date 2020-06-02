@@ -253,9 +253,10 @@ public class Room {
     }
 
     private void isOver() {
+        boolean _isOver = true;
         for (Player player : players.values()) {
             if (player.getStatus()) {
-                return;
+                _isOver = false;
             } else {
                 String msg = "040";
                 for (Player p : players.values()) {
@@ -273,16 +274,17 @@ public class Room {
                 }
             }
         }
-        status = false;
-        System.out.println("ROOM" + idRoom + " STOP !");
-        Game game = Game.getIntance();
-        game.removeRoom(idRoom);
+        if (_isOver) {
+            status = false;
+            System.out.println("ROOM" + idRoom + " STOP !");
+            Game game = Game.getIntance();
+            game.removeRoom(idRoom);
 
-        for (Player player : players.values()) {
-            player.setStatus(true);
+            for (Player player : players.values()) {
+                player.setStatus(true);
+            }
         }
 
-        return;
     }
 
     public void isGameOver(Player player) {
@@ -290,6 +292,7 @@ public class Room {
         int life = hero.getLife();
         if (life == 0) {
             player.setStatus(Boolean.FALSE);
+            return;
         }
         for (int i = 0; i < flyings.length; i++) {
             int index = -1;

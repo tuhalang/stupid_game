@@ -59,6 +59,10 @@ public class Player implements Serializable {
         this.username = username;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public Boolean getStatus() {
         return status;
     }
