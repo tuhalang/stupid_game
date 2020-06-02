@@ -160,17 +160,17 @@ public class ShootGame extends JPanel {
                 }
             }
 
-            public void mouseExited(MouseEvent e) {
-                if (state == RUNNING) {
-                    //state = PAUSE;   
-                }
-            }
+//            public void mouseExited(MouseEvent e) {
+//                if (state == RUNNING) {
+//                    state = PAUSE;   
+//                }
+//            }
 
-            public void mouseEntered(MouseEvent e) {
-                if (state == PAUSE) {
-                    state = RUNNING;
-                }
-            }
+//            public void mouseEntered(MouseEvent e) {
+//                if (state == PAUSE) {
+//                    state = RUNNING;
+//                }
+//            }
         };
         this.addMouseListener(l);
         this.addMouseMotionListener(l);
