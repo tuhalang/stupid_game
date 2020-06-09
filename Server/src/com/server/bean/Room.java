@@ -116,10 +116,11 @@ public class Room {
 
     private void initGame() {
         flyings = new FlyingObject[0];
-
+        int distance = 100;
+        int start = 30;
         for (Player player : players.values()) {
             player.setStatus(true);
-            heros.put(player, new Hero(0, 0));
+            heros.put(player, new Hero(start+=distance, 550));
             bullets.put(player, new Bullet[0]);
 
         }
@@ -279,7 +280,6 @@ public class Room {
                     msg += p.getStatus() ? "0" : "1";
                     msg += "|";
                 }
-                System.out.println("MESSAGE FINISH: " + msg);
                 try {
                     SocketUtil.sendViaTcp(player.getSocket(), msg);
                     removePlayer(player.getUsername());
@@ -292,7 +292,6 @@ public class Room {
             status = false;
             isRunning = false;
             
-            System.out.println("ROOM" + idRoom + " STOP !");
             Game game = Game.getIntance();
             game.removeRoom(idRoom);
 
@@ -337,7 +336,6 @@ public class Room {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                System.out.println("ROOM" + idRoom + " IS RUNNING !");
                 if (status) {
                     isOver();
                     int batchSize = 1;
@@ -353,7 +351,6 @@ public class Room {
                             Player player = command.getPlayer();
                             String message = command.getMessaage();
 
-                            System.out.println("RECIEVE:" + message);
 
                             String[] items = message.split("\\|");
                             if (items.length > 0) {
@@ -389,7 +386,6 @@ public class Room {
                             }
                         }
                         String state = getStateGame();
-                        System.out.println("SEND: " + state);
                         sendStateGame(state);
                     } catch (InterruptedException ex) {
                         LOGGER.error(ex);
