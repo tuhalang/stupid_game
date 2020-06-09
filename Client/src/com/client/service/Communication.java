@@ -94,21 +94,24 @@ public final class Communication {
                                     shootGame.loginState = Config.LOGIN_SUCCESS;
                                     System.out.println("Login Succesfull, now need to choose room");
                                     shootGame.setRoomIDs(message.split("\\|")[1].split(","));
+                                    shootGame.createJoinRoom();
                                     break;
                                 case Config.RES_LOGIN_FAILED:
                                     shootGame.loginState = Config.LOGIN_FAIL;
-                                        JOptionPane.showMessageDialog(null, "Login failed, please try again");
+                                    JOptionPane.showMessageDialog(null, "Login failed, please try again");
                                     break;
                                 case Config.RES_JOIN_ROOM_SUCCESS:
                                     shootGame.loginState = Config.WAIT_PLAY;
-                                        System.out.println("Join room successful");
+                                    System.out.println("Join room successful");
+                                    shootGame.startGamePanel();
                                     break;
                                 case Config.RES_JOIN_ROOM_FAILED:
                                     JOptionPane.showMessageDialog(null, "Join room failed, please try again");
                                     break;
                                 case Config.RES_START_GAME_SUCCESS:
                                     shootGame.loginState = Config.PLAY;
-                                        System.out.println("Let's play");
+                                    System.out.println("Let's play");
+                                    shootGame.setState(shootGame.RUNNING);
                                     break;
                                 case Config.RES_START_GAME_FAILED:
                                     JOptionPane.showMessageDialog(null, "You are not admin");

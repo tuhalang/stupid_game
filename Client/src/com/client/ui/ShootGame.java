@@ -138,8 +138,6 @@ public class ShootGame extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 switch (state) {
                     case START:
-//                        state = RUNNING;
-//                        break;
                         if(isJoinedRoom()){
                             startGamePanel();
                         }else if (isChooseRoom()) {
@@ -160,17 +158,6 @@ public class ShootGame extends JPanel {
                 }
             }
 
-//            public void mouseExited(MouseEvent e) {
-//                if (state == RUNNING) {
-//                    state = PAUSE;   
-//                }
-//            }
-
-//            public void mouseEntered(MouseEvent e) {
-//                if (state == PAUSE) {
-//                    state = RUNNING;
-//                }
-//            }
         };
         this.addMouseListener(l);
         this.addMouseMotionListener(l);
@@ -286,7 +273,6 @@ public class ShootGame extends JPanel {
     }
 
     public void createJoinRoom() {
-        // create JOptionPane to choose room
         
         JComboBox<String> combo = new JComboBox<>(roomIDs);
         String[] options = { "OK", "Cancel" };
