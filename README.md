@@ -1,40 +1,120 @@
 ## This is a stupid game we do to pass Network Programming Subject :((
 
-## Mô tả API 
+## Description API 
 
-1. Login
+### I. Requirement
+1. JDK8
+2. Mongo8
+3. NetBeans
 
-- Khi đăng nhập sẽ sử dụng username và password.
-- Nếu đăng nhập thành công sẽ trả về một chuỗi các roomId có thể join được ngăn cách bởi dấu phẩy.
+### II. Protocol
 
-- request:
-    ```
-    1{"username":"","password":""}
-    ```
-- response:
-    ```
-    0{"roomId":[1111,123]}
-    ```
+#### 1. Response symbol
+| Type         | Prefix      |
+|--------------|-------------|
+| Login        |      00     |
+| Register     |      01     |
+| Start Game   |      03     |
+| Join room    |      02     |
+| Finish Game  |      04     |
 
-2. Join room 
+##### 1.1. Login
 
-- request:
+- Request:
     ```
-    2{"romeId":""}
+    00username|password
     ```
-- response:
+- Response:
+    
+    + Success:
 
-    + thành công: 0
-    + thất bại: 1
+        ```
+        000LOGIN SUCCESSFULLY !
+        ```
 
-3. Control game
+    + Failed:
 
-- request:
+        ```
+        001LOGIN FAILED !
+        ```
+##### 1.2. Register
+- Request:
     ```
-    3{"username":"","direction":1,"shot":true,"plane":{"lon":12,"lan":12,bullets:[{"lon":12,"lan":12}, ...]}}
+    01username|password
     ```
+- Response:
 
-- response:
+    + Success:
+        ```
+        010REGISTER SUCCESSFULLY ! PLEASE LOGIN !
+        ```
+    + Failed:
+        ```
+        011REGISTER FAILED !
+        ```
+##### 1.4. Join Room
+- Request:
     ```
-    0{"bot":[{"lon":12,"lan":12}, ...]},"planes":[{"active":true,"lon":12,"lan":12,bullets:[{"lon":12,"lan":12}, ...]}},...]
+    02playRoomID
     ```
+- Response:
+
+    + Success:
+        ```
+        020
+        ```
+    + Failed:
+        ```
+        021
+        ```
+##### 1.3. Start Game
+- Request:
+    ```
+    03roomID
+    ```
+- Response:
+
+    + Success:
+        ```
+        030player1|player2|...
+        ```
+
+    + Failed:
+        ```
+        031
+        ```
+##### 1.4. Finish Game
+- Response:
+    + Success:
+        ```
+        04username1|score1|isalive1|username2|score2|isalive2|...
+        ```
+##### 1.5. Control Game
+- Request:
+    ```
+    1hero|bullets
+    ```
+- Response:
+
+    + Success:
+        ```
+        flyings|hero1|score1|life1|bullets1|hero2||score2|life2|bullets2|...
+        ```
+- Note:
+    
+    + Hero:
+        ```
+        x,y
+        ```
+    + Bullet:
+        ```
+        x1,y1;x2,y2;...
+        ```
+    + Flyings:
+        ```
+        x1,y1;x2,y2,...
+        ```
+    + Player:
+        ```
+        hero|score|life|bullets
+        ```
