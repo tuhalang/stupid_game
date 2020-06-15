@@ -174,7 +174,6 @@ public final class Communication {
                     String message;
                     try {
                         message = messagesQueue.take();
-                        System.out.println(message);
 
                         String[] items = message.split("\\|");
                         if (items.length > 0) {

@@ -14,7 +14,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Color;
 import java.awt.Font;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.Properties;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -77,7 +80,26 @@ public class ShootGame extends JPanel {
     }
 
     public ShootGame() {//169.254.200.91
-        communication = Communication.getIntance("127.0.0.1", 8888, this);
+        FileReader reader = null;
+        Properties p = null;
+        String server = "127.0.0.1";
+        int port = 8888;
+        try {
+            reader = new FileReader("config.properties");
+            p = new Properties();
+            p.load(reader);
+            server = p.getProperty("server", "127.0.0.1");
+            port = Integer.parseInt(p.getProperty("port", "8888"));
+        } catch (IOException e) {
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+        communication = Communication.getIntance(server, port, this);
         loginState = 0;
     }
 
@@ -276,21 +298,21 @@ public class ShootGame extends JPanel {
         
         JComboBox<String> combo = new JComboBox<>(roomIDs);
         String[] options = { "OK", "Cancel" };
-        String title = "Bắn nhau đuê";
+        String title = "Let's shoot !!!";
         int selection = JOptionPane.showOptionDialog(null, combo, title,
         JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
         if(selection == JOptionPane.YES_OPTION){
             playRoomID = (String)combo.getSelectedItem();
             communication.send("02"+ playRoomID);
         } else {
-            JOptionPane.showMessageDialog(null, "Không chơi thì thôi");
+            JOptionPane.showMessageDialog(null, "Let's play ... please !!!");
         }    
     }
     
     public void startGamePanel(){
-        String[] options = {"Chiến thôi"};
-        int x = JOptionPane.showOptionDialog(null, "Chiến không em ơi",
-                "Bấm đi :)))",
+        String[] options = {"Start"};
+        int x = JOptionPane.showOptionDialog(null, "Do you want to play ???",
+                "Click now :)))",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
         if(x == JOptionPane.YES_OPTION){
             communication.send("03" + playRoomID);
@@ -307,7 +329,7 @@ public class ShootGame extends JPanel {
         };
         int option = JOptionPane.showOptionDialog(null,
                 message,
-                "Feedback",
+                "Login or Register",
                 JOptionPane.YES_NO_CANCEL_OPTION,
                 JOptionPane.INFORMATION_MESSAGE,
                 null,
@@ -322,7 +344,6 @@ public class ShootGame extends JPanel {
                 String mess = "";
                 mess += uname + "|" + pwd;
                 mess = "00" + mess;
-                System.out.println(mess);
                 game.communication.send(mess);
             } else {
                 JOptionPane.showMessageDialog(null, "Two field must be filled");
@@ -338,7 +359,6 @@ public class ShootGame extends JPanel {
                     String mess = "";
                     mess += uname + "|" + pwd;
                     mess = "01" + mess;
-                    System.out.println(mess);
                     game.communication.send(mess);
                 }
             } else {

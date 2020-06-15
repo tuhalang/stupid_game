@@ -147,7 +147,7 @@ public class Room {
 
     public static FlyingObject nextOne() {
         Random rand = new Random();
-        int type = rand.nextInt(20);
+        int type = rand.nextInt(5);
         if (type == 0) {
             return new Bee();
         } else {
