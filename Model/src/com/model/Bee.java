@@ -17,6 +17,18 @@ public class Bee extends FlyingObject implements Award {
         y = -this.height;
         awardType = rand.nextInt(2);
     }
+    
+    public Bee(int k) {
+        image = Config.bee;
+        width = image.getWidth();
+        height = image.getHeight();
+        Random rand = new Random();
+        x = rand.nextInt(Config.WIDTH - this.width);
+        y = -this.height;
+        xSpeed += k;
+        ySpeed += k;
+        awardType = rand.nextInt(2);
+    }
 
     public Bee(int x, int y){
         image = Config.bee;

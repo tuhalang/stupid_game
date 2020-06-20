@@ -11,6 +11,15 @@ public class Airplane extends FlyingObject implements Enemy {
         x = (int) (Math.random() * (Config.WIDTH - this.width));
         y = -this.height;
     }
+    
+    public Airplane(int k) {
+        image = Config.airplane;
+        width = image.getWidth();
+        height = image.getHeight();
+        x = (int) (Math.random() * (Config.WIDTH - this.width));
+        y = -this.height;
+        speed += k;
+    }
 
     public Airplane(int x, int y) {
         image = Config.airplane;

@@ -32,7 +32,7 @@ public class Config {
     
     public static final Boolean AUTO_ASSIGN_ROOM = Boolean.FALSE;
     public static final int MAX_POOL = 30;
-    public static final int FREQ_GEN_FLY = 50;
+    public static final int FREQ_GEN_FLY = 30;
     
     public static final int SIZE_BATCH = 5;
     

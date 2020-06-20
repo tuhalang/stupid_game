@@ -145,22 +145,36 @@ public class Room {
         this.start();
     }
 
-    public static FlyingObject nextOne() {
+    public static FlyingObject nextOne(int k) {
         Random rand = new Random();
-        int type = rand.nextInt(5);
+        int type = rand.nextInt(20);
         if (type == 0) {
-            return new Bee();
+            return new Bee(k);
         } else {
-            return new Airplane();
+            return new Airplane(k);
         }
     }
 
+    
+    private long timeline = 0;
     private int flyEnteredIndex = 0;
+    private final long LEVEL2 = 200;
+    private final long LEVEL3 = 400;
+    private final long LEVEL4 = 600;
 
     public void enterAction() {
         flyEnteredIndex++;
+        timeline++;
         if ((flyEnteredIndex %= Config.FREQ_GEN_FLY) == 0) {
-            FlyingObject obj = nextOne();
+            FlyingObject obj = null;
+            if(timeline < LEVEL2)
+                obj = nextOne(0);
+            else if(timeline >= LEVEL2 && timeline < LEVEL3)
+                obj = nextOne(1);
+            else if(timeline >= LEVEL3 && timeline < LEVEL4)
+                obj = nextOne(2);
+            else if(timeline >= LEVEL4)
+                obj = nextOne(3);
             flyings = Arrays.copyOf(flyings, flyings.length + 1);
             flyings[flyings.length - 1] = obj;
         }
